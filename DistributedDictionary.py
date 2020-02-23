@@ -27,6 +27,7 @@ class EventRecord:
         self.time = time
         self.node = node
 
+
 class Log:
     eventLog = np.array([]) #initialize empty array? is this be best datastructure? 
 
