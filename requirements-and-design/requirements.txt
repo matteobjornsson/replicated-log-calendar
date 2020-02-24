@@ -1,1 +1,50 @@
-summarize requirements here
+#### This document is unfinished ####
+
+
+System model: system consists of N nodes, each corresponding to a single calendar user. 
+
+Calendar: 
+
+    - The calendar shall span exactly 7 days, from Sunday 12:00am until the following Saturday at 11:59pm.
+
+    - The calendar shall maintain a record of appointment events for all N users. 
+
+Appointment events:
+
+    - Appointments shall have unique names
+
+    - Appointments shall be realized as a tuple consisting of the following information: 
+
+        name: Name of the appointment
+        day: Date of the appointment
+        start_time: Start Time
+        end_time: End Time
+        participants: List of node ids
+
+    - Appointment times shall only be scheduled in half hour increments.
+
+    - Appointments shall not span multiple days. 
+
+User interaction: 
+
+    - A user shall be able to view their local version of the calendar (including all details for each appointment)
+    - A user shall be able to 
+
+
+Distributed requirements: 
+
+- Each user node N_i shall maintain a local version of the calendar. 
+
+- Each node shall maintain a log of operations on the calendar from all users. 
+
+- The system shall use Wuu and Bernstein's algorithm to share changes to the calendar between nodes. 
+
+- 
+
+
+
+Implementation/structure: 
+
+- Each node shall store its own local version of the calendar.
+
+
