@@ -19,6 +19,8 @@ def __init__(self, N: int, i: int):
     self.timeTable = numpy.zeros((N,N))
     self.nodeID = i
 
+def check
+
 ## message proccessing: 
 
 def receive(self, m: message) -> void:
@@ -49,3 +51,5 @@ def deleteCalendarEvent(self):
 
 def displayCalendar(self): 
     # method to display calendar to user. 
+
+
