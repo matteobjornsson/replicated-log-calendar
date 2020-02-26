@@ -28,7 +28,16 @@ Appointment events:
 User interaction: 
 
     - A user shall be able to view their local version of the calendar (including all details for each appointment)
-    - A user shall be able to 
+    
+    - A user shall be able to add appointments to the calendar. Appointments may inlcude other users. 
+
+    - If a user creates an appointment involving a different user, the users other than the creator shall be notified that the event including them was created. 
+
+    - A user shall be able to cancel (delete) appointments from the calendar. 
+
+    - If an appointment is deleted and includes users other than the one deleting the event, those users shall be notified that the appointment has been cancelled. 
+
+
 
 
 Distributed requirements: 
