@@ -1,15 +1,20 @@
-#### This document is unfinished ####
 
 
-System model: system consists of N nodes, each corresponding to a single calendar user. 
+System model: system consists of N nodes, each corresponding to a single calendar user. Assumptions: nodes do not fail, communication channels do not fail, messeges arrive as sent. 
 
-Calendar: 
+
+---------
+Calendar:
+--------- 
 
     - The calendar shall span exactly 7 days, from Sunday 12:00am until the following Saturday at 11:59pm.
 
     - The calendar shall maintain a record of appointment events for all N users. 
 
+
+-------------------
 Appointment events:
+-------------------
 
     - Appointments shall have unique names
 
@@ -25,7 +30,10 @@ Appointment events:
 
     - Appointments shall not span multiple days. 
 
-User interaction: 
+
+-----------------
+User interaction:
+----------------- 
 
     - A user shall be able to view their local version of the calendar (including all details for each appointment)
     
@@ -39,8 +47,9 @@ User interaction:
 
 
 
-
-Distributed requirements: 
+-------------------------
+Distributed requirements:
+------------------------- 
 
 - Each user node N_i shall maintain a local version of the calendar. 
 
@@ -48,12 +57,29 @@ Distributed requirements:
 
 - The system shall use Wuu and Bernstein's algorithm to share changes to the calendar between nodes. 
 
-- 
+- If appointments are created that conflict, the system shall resovle this conflict by deleting one of the conflicting appointments and notifying the users involved in the cancelled appointment. 
+
+- the conflict resolution protocol shall not modify the Wuu and Bernstein algorithm, but rather be implemented in addition to Wuu and Bernstein. 
+
+- the system shall truncate logs and reduce message sizes using the Wuu and Bernstein algorithm. 
 
 
+-------------------------
+Implementation/structure:
+------------------------- 
 
-Implementation/structure: 
+- The system shall consist of 4 nodes.
 
-- Each node shall store its own local version of the calendar.
+- Each node shall run as a micro instance on a different machine, each in a different Amazon EC2 regions. 
+
+- Each node shall store the log as a human readable file on disk.
+
+- Each node shall store the calendar as a file on disk. 
+
+- The system will provide a minimal user interface to view, insert, and delete appointments for each node/user. (text based UI is fine)
+
+- Non user events (which are exclusively insert new event, delete event, view calendar) should be triggered automatically by arrival over the network, not through a UI. 
+
+- The project shall not be developed in AWS, but pushed from a repository to an AWS instance to test and demo. 
 
 
