@@ -7,17 +7,24 @@ import numpy
 class Node:
 
     lamportClock = 0
-    calendar = Calendar.Calendar() # right now calendar writes a new file instead of checking for one
+    # right now calendar writes a new file instead of checking for one
+    calendar = Calendar.Calendar() 
     timeTable = None
     log = None 
     nodeID = None
-#    logProcessor = LogProcessor #not sure if this should be instantiated here or in the methods that would use it. 
+#   logProcessor = LogProcessor #not sure if this should be instantiated here 
+#   or in the methods that would use it. 
 
 ## constructor: 
 
     def __init__(self, N: int, i: int):
         self.timeTable = numpy.zeros((N,N))
         self.nodeID = i
+
+## clock:
+    def clock(self) -> int:
+        self.lamportClock += 1
+        return self.lamportClock
 
 ## message proccessing: 
 
@@ -71,6 +78,16 @@ class Node:
 
     def displayCalendar(self): 
         self.calendar.printCalendar()
+
+# These methods are the same as above but built to take the information 
+# directly as parameters, 
+
+    def testAddCalendarEvent(self, name: str, day: int, start_time: float, 
+                                end_time: float, participants: list) -> None:
+        self.calendar.insertEvent(name, day, start_time, end_time, participants)
+
+    def testDeleteCalendarEvent(self, eventName: str) -> None:
+        self.calendar.deleteEvent(eventName)
 
 
 if __name__ == '__main__':
