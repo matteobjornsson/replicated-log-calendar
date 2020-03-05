@@ -5,27 +5,27 @@ class wuuCalendar:
     put the class header here
 
     Attributes:
-        events
+        appointments
         calendarFile
 
     Methods: 
         __init__()
-        insertEvent(event)
-        deleteEvent(eventName)
+        insertAppointment(appointment)
+        deleteAppointment(appointmentName)
         updateCalendarFile()
         printCalendar()
         
     '''
 
-    events = {}
+    appointments = {}
     calendarFile = None
 
     def __init__(self):
         self.updateCalendarFile() # right now calendar writes a new file instead of checking for one
 
-    def insertEvent(self, event: tuple) -> None: 
+    def insertAppointment(self, appointment: tuple) -> None: 
         '''
-        @param event = (
+        @param appointment = (
             name: str, 
             day: int, 
             start_time: float, 
@@ -34,16 +34,16 @@ class wuuCalendar:
             )
         type: tuple
         '''
-        self.events[event[0]] = event
+        self.appointments[appointment[0]] = appointment
         self.updateCalendarFile()
 
-    def deleteEvent(self, eventName: str) -> None:
-        del self.events[eventName]
+    def deleteAppointment(self, appointmentName: str) -> None:
+        del self.appointments[appointmentName]
         self.updateCalendarFile()
 
     def updateCalendarFile(self) -> None:
         with open('../files/calendar.pickle', 'wb') as calendarFile:
-            pickle.dump(self.events, calendarFile)
+            pickle.dump(self.appointments, calendarFile)
 
     def printCalendar(self) -> None:
         with open('../files/calendar.pickle', 'rb') as calendarFile:
