@@ -2,7 +2,7 @@ import socket
 
 s = socket.socket()         # Create a socket object
 host = socket.gethostname() # Get local machine name
-port = 15672                # Reserve a port on EC2 instance
+port = 8080                # Reserve a port on EC2 instance
 s.bind(('', port))        # Bind to the port
 print(host)
 
