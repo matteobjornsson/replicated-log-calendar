@@ -51,26 +51,23 @@ class EventRecord:
     time = 0
     node = 0
     stringRepresentation = ""
+    #String Represenatation: "TIME  NODEID  OPERATION  EVENTNAME DAY START END PARTICIPANTS" #
 
     def __init__(self, operation: str, event: str or tuple, time: int,
                 nodeID: int):
 
-        if isinstance(event, tuple):
             self.operation = operation 
             self.event = event
             self.time = time
             self.node = nodeID
-            self.stringRepresentation = operation + ": Event Name: " + event[0] \
-                + " Day: " + str(event[1]) + " Start Time: " + str(event[2]) \
-                + " End Time: " + str(event[3]) + "Participants: " \
-                + str(event[4])
-        
-        elif isinstance(event, str):
-            self.operation = operation 
-            self.event = event
-            self.time = time
-            self.node = nodeID
-            self.stringRepresentation = operation + ": Event Name: " + event
+            self.stringRepresentation = (str(time) + '\t'   # TIME 
+                                    + str(nodeID) + '\t'    # NODEID
+                                    + operation + '\t'      # OPERATION
+                                    + event[0] + '\t'       # EVENTNAME
+                                    + str(event[1]) + '\t'  # DAY   
+                                    + str(event[2]) + '\t'  # START
+                                    + str(event[3]) + '\t'  # END
+                                    + str(event[4]))        # PARTICIPANTS
     
     def printEventRecord(self):
         print(self.stringRepresentation)

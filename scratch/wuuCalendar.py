@@ -1,6 +1,21 @@
 import pickle
 
 class wuuCalendar:
+    '''
+    put the class header here
+
+    Attributes:
+        events
+        calendarFile
+
+    Methods: 
+        __init__()
+        insertEvent(event)
+        deleteEvent(eventName)
+        updateCalendarFile()
+        printCalendar()
+        
+    '''
 
     events = {}
     calendarFile = None
@@ -8,10 +23,17 @@ class wuuCalendar:
     def __init__(self):
         self.updateCalendarFile() # right now calendar writes a new file instead of checking for one
 
-    def insertEvent(self, name: str, day: int, start_time: float, \
-        end_time: float, participants: list) -> None: 
-
-        event = (name, day, start_time, end_time, participants)
+    def insertEvent(self, event: tuple) -> None: 
+        '''
+        @param event = (
+            name: str, 
+            day: int, 
+            start_time: float, 
+            end_time: float, 
+            participants: list
+            )
+        type: tuple
+        '''
         self.events[event[0]] = event
         self.updateCalendarFile()
 
