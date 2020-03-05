@@ -43,5 +43,5 @@ class createConnections:
         print("the socket has successfully connected to google \ on port == %s" %(host_ip))
 
 
-c = createConnections("54.80.91.169", None, None)
+c = createConnections("3.80.187.26", None, None)
 c.createConnections()

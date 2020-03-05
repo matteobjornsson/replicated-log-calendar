@@ -14,7 +14,7 @@ def thread_socket(c):
       
       msg = msg.decode("utf-8")
       print(msg)
-      c.send(msg)
+      c.send("help".encode("utf-8"))
    c.close()
 
 s = socket.socket()         # Create a socket object
