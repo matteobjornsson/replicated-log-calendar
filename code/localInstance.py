@@ -3,11 +3,6 @@ import sys
 
 
 class createConnections:
-    def __init__(self, node1IP, node2IP, node3IP):
-        self.node1IP = node1IP
-        self.node2IP = node2IP
-        self.node3IP = node3IP
-
     def createConnections(self):
         try: 
             # creating a TCP socket locally 
@@ -43,5 +38,5 @@ class createConnections:
         print("the socket has successfully connected to google \ on port == %s" %(host_ip))
 
 
-c = createConnections("54.80.91.169", None, None)
+c = createConnections("3.80.187.26", None, None)
 c.createConnections()
