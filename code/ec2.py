@@ -13,6 +13,7 @@ def thread_socket(c):
          break
       
       msg = msg.decode("utf-8")
+      print(msg)
       c.send(msg)
    c.close()
 
