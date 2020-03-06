@@ -1,2 +1,6 @@
 TIME	NODE ID	OPERATION	APPOINTMENT NAME	DAY	START	END	PARTICIPANTS
-4	1	Insert	Doctor Appt	3	10.0	11.5	[1, 2]
+1	1	Insert	Doctor Appointment	2	12.5	13.5	[1, 2]
+2	1	Insert	DMV	4	12.5	13.5	[1, 2]
+3	1	Insert	Skiing	3	4	7	5,3
+4	1	Insert	Meeting	5	6	7	2
+5	1	Delete	DMV	4	12.5	13.5	[1, 2]
