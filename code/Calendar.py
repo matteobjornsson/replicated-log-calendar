@@ -45,6 +45,8 @@ class Calendar:
         with open('../files/calendar.pickle', 'wb') as calendarFile:
             pickle.dump(self.appointments, calendarFile)
 
+            
+
     def printCalendar(self) -> None:
         with open('../files/calendar.pickle', 'rb') as calendarFile:
             unpickledCalendar = pickle.load(calendarFile)

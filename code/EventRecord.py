@@ -38,7 +38,7 @@ class EventRecord:
         Parameters:
             operation (str):        Operation, e.g. "Insert" or "Delete"
             appointment (tuple):    Calendar Appointment subject to operation
-            lamportTime (int):      event order on parent node
+            lamportime (int):      event order on parent node
             nodeID (int):           parent node ID 
         """
 
@@ -57,7 +57,7 @@ class EventRecord:
             str(appointment[4])  # PARTICIPANTS 
         ]
         self.stringRepresentation = (
-                str(lamportTime) + '\t'                # TIME 
+            str(lamportTime) + '\t'         # TIME 
             + str(nodeID) + '\t'            # NODEID
             + operation + '\t'              # OPERATION
             + appointment[0] + '\t'         # APPOINTMENTNAME
@@ -95,4 +95,15 @@ class EventRecord:
     event: str
     lamportTime: int
     node: int
+'''
+
+'''
+For reference, an event record as defined in Wuu and Bernstein
+
+type Event = 
+    record
+        op  :   OperationType;
+        time:   TimeType;
+        node:   NodeId;
+    end
 '''

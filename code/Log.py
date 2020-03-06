@@ -2,13 +2,32 @@ import csv
 import EventRecord
 
 class Log:
+    """
+    This is a class for creating Event Records objects for a replicated log 
+
+    Attributes:
+        log (list):     Container for event records in memory (vs in the log file)
+        logFile (File): Reference to log file on disk
+        header (list):  List containing log headers as strings
+    """
 
     log = []
-    logFile = None
-    header = ["TIME","NODE ID", "OPERATION", "APPOINTMENT NAME", "DAY", "START", "END", "PARTICIPANTS"]
+    logFile = None # to implement later, reference to log location? 
+    header = ["TIME","NODE ID", "OPERATION", "APPOINTMENT NAME", "DAY", "START",
+             "END", "PARTICIPANTS"]
 
     def __init__(self):
-        with open('../files/logOutput.tsv', 'wt') as out_file:
+        """
+        Constructor for Log class. 
+        
+        Constructor initializes (*overwriting current file!*) an empty .tsv file
+        for the log with the header as the first line. 
+
+        TODO: Constructor needs to check file location for existing log. If one
+        exists it needs to populate self.log with the existing records from file
+        """
+        with open('../files/logOutput.tsv', 'w') as out_file:
+            # this method creates a new tsv file, overwriting existing
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(self.header)
 
@@ -18,9 +37,13 @@ class Log:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
 
-    # def hasrec(self, eR: eventRecord):
+    def hasrec(self, eR: EventRecord):
+        print("this is the hasrec function")
 
-    # def truncateLog(self, eventName: str):
+    def truncateLog(self, listOfEventRecords: list):
+        # if all nodes know of an eventRecord, delete it from the local log
+        # do that ^
+        print("this is the truncate function")
 
 
 
