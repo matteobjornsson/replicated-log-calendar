@@ -25,13 +25,43 @@ class Node:
 
 ## message proccessing: 
 
-#    def receive(self, m: message) -> void:
+    def receive(self, received_NP_log, received_timetable):
+        #NE = [fr for fr in received_NP_log if not self.hasRec(fr, self.nodeID)]
+        received_nodeID = 0
+        for fr in received_NP_log:
+            if not self.hasRec(fr, self.nodeID):  #Create list of new eventrecords to update log later
+                self.log.append(fr)
+            if fr.operation == "Insert": #Update calendar object when inserting
+                if received_nodeID == 0:
+                    received_nodeID = fr.nodeID
+                self.calendar.insertAppointment(fr.appointment)
+            elif fr.operation == "Delete": #Update calendar object when deleting
+                self.calendar.deleteAppointment(fr.appointment[0])
+
+        for i in self.timeTable: #Update timetable
+            self.timeTable[self.nodeID, i] = max(self.timeTable[self.nodeID, i], received_timetable[received_nodeID, i])
+            for j in self.timeTable:
+                self.timeTable[i,j] = max(self.timeTable[i,j], received_timetable[i,j])
+        
+        #self.log = [[er for er in self.log if not self.hasRec(er, j)] for j in range(len(self.timeTable[0]))]
+        updated_log = []
+        for er in self.log:
+            for j in range(len(self.timeTable[0])):
+                if not self.hasRec(er, j):
+                    updated_log.append(er)
+        self.log = updated_log
+
         # process incoming messages. Update the timeTable and calendar accordingly. 
         # options:  add appointment
         #           delete appointment
         # add any appointments to the log by passing an eventRecord object to addEventToLog()
 
-#    def send(self, m: message) -> void:
+    def send(self, to_nodeId):
+        """
+        message to be sent
+        """
+        NP = [er for er in self.log if not self.hasRec(eR, to_nodeId)]
+        print([NP, self.timeTable])
         # send a message to other nodes when a change is made to the log
         # or as required to resolve conflicts. 
         # Use logProcessor to buld a PartialLog with hasrec() to include with message. 
