@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 **/__pycache__
 *.tsv
 *.pickle
+=======
+*.pickle
+*.tsv
+**/__pycache__
+>>>>>>> master
