@@ -5,7 +5,6 @@ lock = threading.Lock()
 
 def thread_socket(c):
    while True:
-
       msg = c.recv(1024)
       if not msg:
          print("exiting socket")
