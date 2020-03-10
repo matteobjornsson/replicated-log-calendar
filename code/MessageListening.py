@@ -8,6 +8,7 @@ This should be running on every node.
 
 lock = threading.Lock()
 messageQueue = []
+connection_list = []
 
 def thread_socket(c):
    """
@@ -22,14 +23,14 @@ def thread_socket(c):
       msg = c.recv(1024)
       if not msg:
          print("exiting socket")
-         lock.release()
+         #lock.release()
          break
       
       msg = msg.decode("utf-8") #Decode messages for interpretation
       #TODO: Message has to be sent somewhere for usage.
       print(msg)
       #c.send("help".encode("utf-8"))
-   c.close()
+   #c.close()
 
 def listen():
    s = socket.socket()         # Create a socket object
@@ -42,10 +43,11 @@ def listen():
    while True:
       c, addr = s.accept()     # Establish connection from local
       print('Connection with', addr)
-      lock.acquire() #lock for threading
-      threading.Thread(target=thread_socket, args=(c,)).start()
+      #lock.acquire() #lock for threading
+      connection_list.append(threading.Thread(target=thread_socket, args=(c,)).start())
+      print(threading.enumerate())
 
-   s.close()
+   #s.close()
 
 if __name__ == "__main__":
    listen()

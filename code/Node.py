@@ -3,6 +3,7 @@ import Log
 #import PartialLog
 import EventRecord as ER
 import numpy
+import Messenger
 
 class Node:
 
@@ -11,12 +12,13 @@ class Node:
 
 ## constructor: 
 
-    def __init__(self, N: int, i: int):
+    def __init__(self, N: int, i: int, nodesToConnectTo: list):
         self.lamportTime = 0
         self.timeTable = numpy.zeros((N,N))
         self.nodeID = i
         self.log = Log.Log() 
         self.calendar = Calendar.Calendar() 
+        self.messenger = Messenger.Messenger(nodesToConnectTo)
 
 ## clock:
     def clock(self) -> int:
