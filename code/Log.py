@@ -43,7 +43,10 @@ class Log:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
 
-    # def truncateLog(self, eventName: str):
+    def truncateLog(self, listOfEventRecords: list):
+        # if all nodes know of an eventRecord, delete it from the local log
+        # do that ^
+        print("this is the truncate function")
 
     def read_log_line(self, line):
         participants = [p.strip() for p in ast.literal_eval(line[7])]
