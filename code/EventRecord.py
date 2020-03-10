@@ -23,12 +23,6 @@ class EventRecord:
 
     '''
     # Attributes initalized 
-    operation = ""
-    appointment = None
-    lamportTime = 0
-    node = 0
-    iterable = None
-    stringRepresentation = ""
     
     def __init__(self, operation: str, appointment: tuple, lamportTime: int,
                 nodeID: int):
@@ -45,7 +39,7 @@ class EventRecord:
         self.operation = operation 
         self.appointment = appointment
         self.lamportTime = lamportTime
-        self.node = nodeID
+        self.nodeID = nodeID
         self.iterable = [
             lamportTime,
             nodeID,

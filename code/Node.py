@@ -6,20 +6,17 @@ import numpy
 
 class Node:
 
-    lamportClock = 0
-    # right now calendar writes a new file instead of checking for one
-    calendar = Calendar.Calendar() 
-    timeTable = None
-    log = Log.Log() 
-    nodeID = None
 #   logProcessor = LogProcessor #not sure if this should be instantiated here 
 #   or in the methods that would use it. 
 
 ## constructor: 
 
     def __init__(self, N: int, i: int):
+        self.lamportTime = 0
         self.timeTable = numpy.zeros((N,N))
         self.nodeID = i
+        self.log = Log.Log() 
+        self.calendar = Calendar.Calendar() 
 
 ## clock:
     def clock(self) -> int:
@@ -103,6 +100,12 @@ class Node:
 
     def testDeleteCalendarAppointment(self, appointmentName: str) -> None:
         self.calendar.deleteAppointment(appointmentName)
+
+    def hasRec(self, eR: eventRecord, otherNodeId: int):
+        if self.timeTable[otherNodeId, eR.nodeID] >= eR.lamportTime:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':

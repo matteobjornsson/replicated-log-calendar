@@ -17,10 +17,16 @@ class Calendar:
         
     '''
 
-    appointments = {}
     calendarFile = None
 
-    def __init__(self):
+    def __init__(self, appointments = {}):
+        self.appointments = None
+        try:
+            with open('../files/calendar.pickle', 'rb') as read_file:
+                self.appointments = pickle.load(read_file)
+        except FileNotFoundError:
+            self.appointments = appointments
+            print("No calendar object available to read in")
         self.updateCalendarFile() # right now calendar writes a new file instead of checking for one
 
     def insertAppointment(self, appointment: tuple) -> None: 
@@ -46,9 +52,9 @@ class Calendar:
             pickle.dump(self.appointments, calendarFile)
 
     def printCalendar(self) -> None:
-        with open('../files/calendar.pickle', 'rb') as calendarFile:
-            unpickledCalendar = pickle.load(calendarFile)
-        print(unpickledCalendar)
+        #with open('../files/calendar.pickle', 'rb') as calendarFile:
+        #    unpickledCalendar = pickle.load(calendarFile)
+        print(self.appointments)
 
     def contains(self, appointmentName: str) -> bool:
         return (appointmentName in self.appointments)
