@@ -27,10 +27,13 @@ class createConnections:
             # this means could not resolve the host 
             print("there was an error resolving the host")
             sys.exit() 
-        stringToSend = "this is where you put the stuff to be sent"
+        stringToSend = "this is where you put the stuff to be sent-"
         # turn it to bytes to be sent
         b = bytes(stringToSend, 'utf-8')
         s.send(b)
+        s.send(b + "--".encode())
+        s.send(b + "---".encode())
+        
         while True:
         # connecting to the server 
             msg = s.recv(1024)
