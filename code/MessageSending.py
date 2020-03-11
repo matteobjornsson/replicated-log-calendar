@@ -17,7 +17,7 @@ class createConnections:
             print("socket creation failed with error %s" %(err))
 
         # this port is open on the EC2 instance
-        port = 8080
+        port = 8081
   
         try: 
             # connect to this open port on this EC2 instance's IP 
@@ -27,10 +27,18 @@ class createConnections:
             # this means could not resolve the host 
             print("there was an error resolving the host")
             sys.exit() 
-        stringToSend = "this is where you put the stuff to be sent"
+        stringToSend = "this is where you put the stuff to be sent-"
         # turn it to bytes to be sent
         b = bytes(stringToSend, 'utf-8')
-        s.send(b)
+        s.sendall(b)
+        s.sendall(b + "--".encode())
+        s.sendall(b + "---".encode())
+
+        while True:
+            message = input("what do you want to send?\n")
+            b = bytes(message, 'utf-8')
+            s.sendall(b)
+        
         while True:
         # connecting to the server 
             msg = s.recv(1024)
@@ -43,5 +51,5 @@ class createConnections:
         print("the socket has successfully connected to google \ on port == %s" %(host_ip))
 
 
-c = createConnections("3.80.187.26", None, None)
+c = createConnections("localhost", None, None)
 c.createConnections()
