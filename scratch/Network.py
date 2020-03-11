@@ -61,7 +61,7 @@ class NetworkLayer:
         #keep calling send until all the bytes are transferred
         totalsent = 0
         while totalsent < len(msg_S):
-            sent = self.conn.send(msg_S[totalsent:].encode('utf-8'))
+            sent = self.conn.sendall(msg_S[totalsent:].encode('utf-8'))
             if sent == 0:
                 raise RuntimeError("socket connection broken")
             totalsent = totalsent + sent

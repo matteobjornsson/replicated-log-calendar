@@ -33,7 +33,8 @@ class Messenger:
         for t in self.allThreads:
             t.join()
 
-        print("NODE ", self.nodeID, " connected to all other nodes.")
+        print("\n** NODE ", self.nodeID, " connected to all other nodes. **\n")
+        self.test()
 
 
     def startup_outgoing_connections(self):
@@ -118,6 +119,15 @@ class Messenger:
             self.message_queue.append(msg)
             print(msg)
 
+    def test(self):
+
+        while True:
+            message = ("Message from Node {} : ".format(self.nodeID) + '\"' 
+                        + input("\nType a message to send to the other nodes:\n") 
+                        + '\"')
+            b = bytes(message, 'utf-8')
+            for s in self.out_sockets:
+                s.sendall(b)
 
 if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='Messenger Utility')
