@@ -29,6 +29,7 @@ class Messenger:
     def startup_outgoing_connections(self):
         for i in range(0,3):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            
 
 
     def init_incoming_message_threads(self):
