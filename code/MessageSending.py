@@ -30,9 +30,14 @@ class createConnections:
         stringToSend = "this is where you put the stuff to be sent-"
         # turn it to bytes to be sent
         b = bytes(stringToSend, 'utf-8')
-        s.send(b)
-        s.send(b + "--".encode())
-        s.send(b + "---".encode())
+        s.sendall(b)
+        s.sendall(b + "--".encode())
+        s.sendall(b + "---".encode())
+
+        while True:
+            message = input("what do you want to send?\n")
+            b = bytes(message, 'utf-8')
+            s.sendall(b)
         
         while True:
         # connecting to the server 

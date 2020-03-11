@@ -1,54 +1,106 @@
 import socket
-import threading
-from time import sleep 
+import threading 
 import argparse
+from time import sleep
 
 class Messenger:
 
-    connection_list = []
-    thread_list = []
+    nodes = [(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
+             (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
+
+    out_sockets = []
+    in_socket_threads = []
+    allThreads = []
     message_queue = []
 
-
-    def __init__(self, nodeID: int, N: list):
+    def __init__(self, nodeSelf: int):
         '''
         Constructor for the Messenger Class
 
-        takes in list of tuples that represent other nodes in system to connect
-        to: (nodeID: int, nodeIP: str)
-        creates that many socket connections and stores them in a list
+        takes in an integer telling messenger what node number it is. 
+        Creates socket connections to all other nodes. 
         '''
+        self.nodeID = nodeSelf
 
-        # initialize socket connections, store them in list
-        self.nodeID = nodeID
-        self.Nodes = N
-        self.s = socket.socket()         # Create a socket object
-        self.host = socket.gethostname() # Get local machine name
-        self.port = 8080     # Reserve a port on EC2 instance
-        self.s.bind(('', self.port))     # Bind to the port
-        self.s.listen(5) #enable listening on socket
-        
-        # if there are already nodes up and running, connect to them
-        if N != []:
-            for node in N:
-                self.connectToExistingNode(node[1], node[0])
+        connection_thread = (
+            threading.Thread(
+                target=self.init_incoming_message_threads)
+            )
+        connection_thread.start()
+        self.allThreads.append(connection_thread)
 
-        # listen for new connections while initializing all 4 nodes
+        self.startup_outgoing_connections()
+        for t in self.allThreads:
+            t.join()
+
+        print("NODE ", self.nodeID, " connected to all other nodes.")
+
+
+    def startup_outgoing_connections(self):
+        nodesConnected = 0
+        otherNodes = self.nodes[self.nodeID-1][3]
+
+        for i in range(0,3):
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.out_sockets.append(s)
+
+        for i in range(0,3):
+            hostSocket = self.out_sockets[i]
+            destinationNode = otherNodes[i]
+            destinationIP = self.nodes[destinationNode-1][1]
+            destinationPort = self.nodes[destinationNode-1][2]
+
+            x = threading.Thread(
+                target=self.connect_socket,
+                args=(hostSocket,
+                      destinationIP,
+                      destinationPort,
+                      destinationNode
+                ))
+            x.start()
+            self.allThreads.append(x)
+
+
+    def connect_socket(self, s: socket, host_ip: str, port: int, destination: int):
         while True:
-            c, addr = self.s.accept()     # Establish connection from port
-            print('Connection with', addr)
-            self.addIncomingConnection(c) # pass off this connection to a new thread to listen for messages from that connection
-            self.connection_list += [c]   # save specifically the connection for later
-            print(threading.enumerate())   
-            print(self.connection_list)
-            return_msg = bytes("talkin back!", 'utf-8') 
-            for conn in self.connection_list: #testing the connections received and stored
-                conn.send(return_msg)
+            try:
+                s.connect((host_ip, port))
+                print("Out connected to :", destination)
+                break
+            except socket.error:
+                print("Connecting to ", destination, ".....")
+                sleep(3)
+                continue
 
 
-    # this method accepts a connection and starts a new thread to listen to it
-    # adding incoming messages to a global queue
-    def thread_socket(self, c):
+    def init_incoming_message_threads(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        host = socket.gethostname()
+        # TODO: add a try catch block in case s.bind() the port is busy
+        while True:
+            try:
+                s.bind(('', self.nodes[self.nodeID-1][2]))
+                break
+            except socket.error:
+                sleep(5)
+                continue
+        s.listen(4)
+
+        while True:
+            c, addr = s.accept()
+            print("In connected to: ", addr) 
+            self.in_socket_threads.append(
+                threading.Thread(
+                    target=self.message_collector_thread, 
+                    args=(c, self.nodes[self.nodeID-1][2]),
+                ).start()
+            )
+
+            if len(self.in_socket_threads)>2:
+                break
+            
+    def message_collector_thread(self, connection, selfPort:int):
         """
         Function to be threaded.
         Eables message receiving.
@@ -57,7 +109,7 @@ class Messenger:
             c:: socket channel to listen on
         """
         while True:
-            msg = c.recv(1024)
+            msg = connection.recv(1024)
             if not msg:
                 print("exiting socket")
                 #lock.release()
@@ -66,60 +118,10 @@ class Messenger:
             self.message_queue.append(msg)
             print(msg)
 
-    # method takes a connection and starts a new thread to handle messages incoming on that connection
-    def addIncomingConnection(self, connection):
-        self.thread_list.append(threading.Thread(target=self.thread_socket, args=(connection,)).start())
-
-    # given the details of an existing node, connect to that node
-    # TODO: figure out how to store the connection for later use
-    def connectToExistingNode(self, destinationIP:int, destinationNodeID: int):
-
-        try: 
-            # creating a TCP socket locally 
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-            print("Socket successfully created")
-        except socket.error as err: 
-            print("socket creation failed with error %s" %(err))
-
-        # this port is open on the EC2 instance
-        port = 8080
-  
-        try: 
-            # connect to this open port on this EC2 instance's IP 
-            host_ip = socket.gethostbyname(destinationIP) 
-            s.connect((host_ip, port)) 
-            #print('Connection with', addr)
-            #self.connection_list += [c]
-            stringToSend = "this is from node {}".format(str(self.nodeID))
-            # turn it to bytes to be sent
-            b = bytes(stringToSend, 'utf-8')
-            s.send(b)
-            s.send(b + "--".encode())
-        except socket.gaierror: 
-            # this means could not resolve the host 
-            print("there was an error resolving the host")
-            sys.exit() 
-
-
-
-    def send(self, destination: int, message):
-        print("sending to {}".format(str(destination)))
-
-    def receive(self, message):
-        print("message received")
-
-    def encode(self, message):
-        #pickle me
-        print("encoded")
-    
-    def decode(self, message):
-        #unpickle me
-        print("decoded")
 
 if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='Messenger Utility')
     parser.add_argument('nodeID', help='NodeID.', type=int)
     args = parser.parse_args()
-    #messenger = Messenger(args.nodeID, [(1, "localhost")])
 
-    messenger = Messenger(args.nodeID, []) 
+    messenger = Messenger(args.nodeID)

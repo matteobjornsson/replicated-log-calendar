@@ -29,7 +29,7 @@ def thread_socket(c):
       msg = msg.decode("utf-8") #Decode messages for interpretation
       #TODO: Message has to be sent somewhere for usage.
       print(msg)
-      #c.send("help".encode("utf-8"))
+      #c.sendall("help".encode("utf-8"))
    #c.close()
 
 def listen():
