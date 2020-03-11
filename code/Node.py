@@ -12,7 +12,7 @@ class Node:
 
 ## constructor: 
 
-    def __init__(self, N: int, i: int, nodesToConnectTo: list):
+    def __init__(self, N: int, i: int):
         self.lamportTime = 0
         self.timeTable = numpy.zeros((N,N))
         self.nodeID = i
@@ -48,11 +48,14 @@ class Node:
                 self.calendar.deleteAppointment(fr.appointment[0])
 
         for i in self.timeTable: #Update timetable
-            self.timeTable[self.nodeID, i] = max(self.timeTable[self.nodeID, i], received_timetable[received_nodeID, i])
+            self.timeTable[self.nodeID, i] = max(self.timeTable[self.nodeID, i],
+                                         received_timetable[received_nodeID, i])
             for j in self.timeTable:
-                self.timeTable[i,j] = max(self.timeTable[i,j], received_timetable[i,j])
+                self.timeTable[i,j] = max(self.timeTable[i,j], 
+                                        received_timetable[i,j])
         
-        #self.log = [[er for er in self.log if not self.hasRec(er, j)] for j in range(len(self.timeTable[0]))]
+        #self.log = [[er for er in self.log if not self.hasRec(er, j)] 
+        #           for j in range(len(self.timeTable[0]))]
         updated_log = []
         for er in self.log:
             for j in range(len(self.timeTable[0])):
@@ -126,7 +129,12 @@ class Node:
         if self.calendar.contains(appointmentName):
             lamportTime = self.clock()
             self.timeTable[self.nodeID][self.nodeID] = lamportTime
-            eR = ER.EventRecord("Delete", self.calendar.getAppointment(appointmentName), lamportTime, self.nodeID)
+            eR = ER.EventRecord(
+                "Delete", 
+                self.calendar.getAppointment(appointmentName), 
+                lamportTime, 
+                self.nodeID
+            )
             self.log.insert(eR)
             self.calendar.deleteAppointment(appointmentName)
             print("\"{}\" appointment deleted.\n".format(appointmentName))

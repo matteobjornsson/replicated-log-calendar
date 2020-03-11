@@ -13,6 +13,8 @@ class Messenger:
     allThreads = []
     message_queue = []
 
+######## Constructor ###### 
+
     def __init__(self, nodeSelf: int):
         '''
         Constructor for the Messenger Class
@@ -40,6 +42,7 @@ class Messenger:
 
         print("\n** NODE ", self.nodeID, " connected to all other nodes. **\n")
 
+###### Initialization Methods ###### 
 
     def init_outgoing_connections(self):
         '''
@@ -149,6 +152,19 @@ class Messenger:
             b = bytes(message, 'utf-8')
             for s in self.out_sockets:
                 s.sendall(b)
+
+######  Normal Operation Methods ###### 
+    # TODO:
+    # def send(self, N, m):
+        # send the thing
+
+    
+######  Recovery Methods ######
+    # TODO:
+    # methods here for detecting node loss and allowing to reconnect
+    # might be able to use @init_incoming_message_threads() again
+
+
 
 if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='Messenger Utility')
