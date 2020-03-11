@@ -18,7 +18,7 @@ class Node:
         self.nodeID = i
         self.log = Log.Log() 
         self.calendar = Calendar.Calendar() 
-        self.messenger = Messenger.Messenger(nodesToConnectTo)
+        self.messenger = Messenger.Messenger()
 
 ## clock:
     def clock(self) -> int:
@@ -121,3 +121,5 @@ if __name__ == '__main__':
     node.displayCalendar()
     node.deleteCalendarAppointment()
     node.displayCalendar()
+    
+

@@ -17,40 +17,52 @@ class Messenger:
         '''
         Constructor for the Messenger Class
 
-        takes in an integer telling messenger what node number it is. 
-        Creates socket connections to all other nodes. 
+        Initializes socket connections to all other nodes. 
+
+        @Param:
+            nodeSelf:: defines the ID of this node
         '''
         self.nodeID = nodeSelf
 
+        # start a thread to grant incoming connections from other nodes
         connection_thread = (
             threading.Thread(
-                target=self.init_incoming_message_threads)
-            )
-        connection_thread.start()
-        self.allThreads.append(connection_thread)
+                target=self.init_incoming_message_threads))
+        connection_thread.start()                   # start the thread
+        self.allThreads.append(connection_thread)   # store for later reference
 
-        self.startup_outgoing_connections()
+        # Start a thread for each node to acquire a connection to it 
+        self.init_outgoing_connections()
+        
+        # join all initialization threads
         for t in self.allThreads:
             t.join()
 
         print("\n** NODE ", self.nodeID, " connected to all other nodes. **\n")
-        self.test()
 
 
-    def startup_outgoing_connections(self):
-        nodesConnected = 0
-        otherNodes = self.nodes[self.nodeID-1][3]
+    def init_outgoing_connections(self):
+        '''
+        This method creates a socket for each node other than self, creating 
+        a thread for that socket which tries to connect to the other node. 
+        '''
+        #reference for what nodes to connect to
+        otherNodes = self.nodes[self.nodeID-1][3] 
 
+        # generate 3 sockets and store them for reference
         for i in range(0,3):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.out_sockets.append(s)
 
+        # for each socket assign it a node and thread to connect to that node
         for i in range(0,3):
             hostSocket = self.out_sockets[i]
             destinationNode = otherNodes[i]
             destinationIP = self.nodes[destinationNode-1][1]
             destinationPort = self.nodes[destinationNode-1][2]
-
+            
+            # connection is threaded because the other nodes may or may not 
+            # be running or accepting connections yet
             x = threading.Thread(
                 target=self.connect_socket,
                 args=(hostSocket,
@@ -59,68 +71,77 @@ class Messenger:
                       destinationNode
                 ))
             x.start()
-            self.allThreads.append(x)
+            self.allThreads.append(x) #threads stored for reference
 
 
     def connect_socket(self, s: socket, host_ip: str, port: int, destination: int):
+        '''
+        Method takes a socket and connection parameters and connects to that 
+        destination. 
+
+        @Param:
+            s:: socket to be used to establish connection
+            host_ip::   destination IP
+            port::      destination Port
+            destination::   node ID of destination. 
+        '''
         while True:
-            try:
+            try:# attempt to connect socket to other node
                 s.connect((host_ip, port))
-                print("Out connected to :", destination)
+                print("Out socket connected to :", destination)
                 break
             except socket.error:
+                # while the connection fails, wait, and retry
                 print("Connecting to ", destination, ".....")
                 sleep(3)
                 continue
 
 
     def init_incoming_message_threads(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        host = socket.gethostname()
-        # TODO: add a try catch block in case s.bind() the port is busy
-        while True:
-            try:
-                s.bind(('', self.nodes[self.nodeID-1][2]))
-                break
-            except socket.error:
-                sleep(5)
-                continue
-        s.listen(4)
+        '''
+        Method creates a socket that listens for incoming connections, assigning
+        them to a new thread on arrival to accept messages from connection.
+        '''
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
+        host = socket.gethostname() # acquire self hostname
+        s.bind(('', self.nodes[self.nodeID-1][2])) # bind to predetermined port
+        s.listen(4) #accept up to 4 connections
 
         while True:
-            c, addr = s.accept()
-            print("In connected to: ", addr) 
+            c, addr = s.accept() # store the incoming connection in c, addr
+            print("Input socket connected to: ", addr) 
+            # start a thread with that connnection to listen for add'l msgs
             self.in_socket_threads.append(
                 threading.Thread(
                     target=self.message_collector_thread, 
-                    args=(c, self.nodes[self.nodeID-1][2]),
+                    args=(c, ),
                 ).start()
             )
-
+            # once all three other nodes connect, end this thread. 
             if len(self.in_socket_threads)>2:
                 break
             
-    def message_collector_thread(self, connection, selfPort:int):
+    def message_collector_thread(self, connection):
         """
-        Function to be threaded.
+        Function to be threaded to collect messages and pass them to a msg queue.
         Eables message receiving.
 
         @Param:
-            c:: socket channel to listen on
+            connection:: socket channel to listen on
         """
+        #Continually listen for msgs
         while True:
             msg = connection.recv(1024)
+            #report when a connection closes or fails. 
             if not msg:
                 print("exiting socket")
-                #lock.release()
                 break
             msg = msg.decode("utf-8") #Decode messages for interpretation
-            self.message_queue.append(msg)
+            self.message_queue.append(msg) # Append to msg queue
             print(msg)
 
     def test(self):
-
         while True:
             message = ("Message from Node {} : ".format(self.nodeID) + '\"' 
                         + input("\nType a message to send to the other nodes:\n") 
@@ -135,3 +156,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     messenger = Messenger(args.nodeID)
+    messenger.test()
