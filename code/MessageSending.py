@@ -17,7 +17,7 @@ class createConnections:
             print("socket creation failed with error %s" %(err))
 
         # this port is open on the EC2 instance
-        port = 8080
+        port = 8081
   
         try: 
             # connect to this open port on this EC2 instance's IP 

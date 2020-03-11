@@ -12,9 +12,10 @@ class Messenger:
 
     def __init__(self, nodeID: int, N: list):
         '''
+        Constructor for the Messenger Class
+
         takes in list of tuples that represent other nodes in system to connect
         to: (nodeID: int, nodeIP: str)
-
         creates that many socket connections and stores them in a list
         '''
 
@@ -38,8 +39,8 @@ class Messenger:
             print('Connection with', addr)
             self.addIncomingConnection(c) # pass off this connection to a new thread to listen for messages from that connection
             self.connection_list += [c]   # save specifically the connection for later
-            #print(threading.enumerate())   
-            #print(self.connection_list)
+            print(threading.enumerate())   
+            print(self.connection_list)
             return_msg = bytes("talkin back!", 'utf-8') 
             for conn in self.connection_list: #testing the connections received and stored
                 conn.send(return_msg)
@@ -89,11 +90,11 @@ class Messenger:
             s.connect((host_ip, port)) 
             #print('Connection with', addr)
             #self.connection_list += [c]
-            #stringToSend = "this is from node {}".format(str(self.nodeID))
+            stringToSend = "this is from node {}".format(str(self.nodeID))
             # turn it to bytes to be sent
-            #b = bytes(stringToSend, 'utf-8')
-            #c.send(b)
-            #c.send(b + "--".encode())
+            b = bytes(stringToSend, 'utf-8')
+            s.send(b)
+            s.send(b + "--".encode())
         except socket.gaierror: 
             # this means could not resolve the host 
             print("there was an error resolving the host")
