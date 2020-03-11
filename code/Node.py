@@ -20,8 +20,8 @@ class Node:
 
 ## clock:
     def clock(self) -> int:
-        self.lamportClock += 1
-        return self.lamportClock
+        self.lamportTime += 1
+        return self.lamportTime
 
 ## message proccessing: 
 
@@ -34,7 +34,14 @@ class Node:
             if fr.operation == "Insert": #Update calendar object when inserting
                 if received_nodeID == 0:
                     received_nodeID = fr.nodeID
-                self.calendar.insertAppointment(fr.appointment)
+                try:
+                    self.calendar.insertAppointment(fr.appointment) #Check for conflict resolution
+                except ValueError:
+                    if received_nodeID > self.nodeID:   #Tiebreaker based on node id's, higher node id wins the insert right.
+                        self.calendar.insertAppointment(fr.appointment, override=True)
+                    else:
+                        print("Appointment was not inserted because an appointment with the name '%s' already exists."%(fr.appointment[0]))
+
             elif fr.operation == "Delete": #Update calendar object when deleting
                 self.calendar.deleteAppointment(fr.appointment[0])
 
@@ -100,7 +107,13 @@ class Node:
         self.timeTable[self.nodeID][self.nodeID] = lamportTime
         eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
         self.log.insert(eR)
-        self.calendar.insertAppointment(appointment)
+        try:
+            self.calendar.insertAppointment(appointment)
+        except ValueError:
+            print("Appointment already exists.")
+            confirm_update = input("Would you like to override the existing appointment? (y/n)")
+            if confirm_update == "y":
+                self.calendar.insertAppointment(appointment, override = True)
         print("\"{}\" added to calendar.".format(appointment[0]))
 
 
@@ -131,7 +144,7 @@ class Node:
     def testDeleteCalendarAppointment(self, appointmentName: str) -> None:
         self.calendar.deleteAppointment(appointmentName)
 
-    def hasRec(self, eR: eventRecord, otherNodeId: int):
+    def hasRec(self, eR, otherNodeId: int):
         if self.timeTable[otherNodeId, eR.nodeID] >= eR.lamportTime:
             return True
         else:
@@ -144,7 +157,7 @@ if __name__ == '__main__':
     dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
     node.addCalendarAppointment(doctorAppointment)
     node.addCalendarAppointment(dmvAppointment)
-    # node.addCalendarAppointment()
+    node.addCalendarAppointment(doctorAppointment)
     # node.addCalendarAppointment()
     node.displayCalendar()
     node.deleteCalendarAppointment()

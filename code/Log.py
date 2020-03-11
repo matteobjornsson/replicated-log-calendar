@@ -1,4 +1,4 @@
-import csv, ast
+import csv, ast, os
 import EventRecord
 
 """
@@ -26,14 +26,16 @@ class Log:
     def __init__(self, log = [], logfile = ""):
         self.log = log
         self.logfile = logfile
+        file_path = '../files/logOutput.tsv'
         try:
-            with open('../files/logOutput.tsv', 'r') as read_file:
-                line = read_file.readline()
-                while line:
+            with open(file_path, 'r') as read_file:
+                csv_reader = csv.reader(read_file, delimiter='\t')
+                next(csv_reader)
+                for line in csv_reader:
                     self.log.append(self.read_log_line(line))
-                    line = read_file.readline()
+                    #line = read_file.readline()
         except FileNotFoundError:
-            with open('../files/logOutput.tsv', 'wt') as out_file:
+            with open(file_path, 'w+') as out_file:
                 logWriter = csv.writer(out_file, delimiter='\t')
                 logWriter.writerow(self.header)
 
@@ -49,9 +51,10 @@ class Log:
         print("this is the truncate function")
 
     def read_log_line(self, line):
-        participants = [p.strip() for p in ast.literal_eval(line[7])]
+        print(line[7])
+        participants = [p for p in ast.literal_eval(line[7])]
         appointment = (line[3], line[4], line[5], line[6], participants)
-        new_record = EventRecord(line[2], appointment, int(line[0]), int(line[1]))
+        new_record = EventRecord.EventRecord(line[2], appointment, int(line[0]), int(line[1]))
         print("read in record: ", new_record.printEventRecord())
         return new_record
 

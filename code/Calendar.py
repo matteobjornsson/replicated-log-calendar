@@ -1,5 +1,10 @@
 import pickle
 
+class CalendarConflictError(ValueError):
+    '''Raise error when a conflicting appointment occurs'''
+    def __init__(self, message):
+        self.message = message
+
 class Calendar:
     '''
     put the class header here
@@ -20,16 +25,18 @@ class Calendar:
     calendarFile = None
 
     def __init__(self, appointments = {}):
-        self.appointments = None
+        #self.appointments = {}
         try:
-            with open('../files/calendar.pickle', 'rb') as read_file:
-                self.appointments = pickle.load(read_file)
+            read_file = open('../files/calendar.pkl', 'rb')
+            self.appointments = pickle.load(read_file)
+            print("pickle: ",self.appointments)
+            read_file.close()
         except FileNotFoundError:
             self.appointments = appointments
             print("No calendar object available to read in")
-        self.updateCalendarFile() # right now calendar writes a new file instead of checking for one
-
-    def insertAppointment(self, appointment: tuple) -> None: 
+        self.updateCalendarFile() 
+        
+    def insertAppointment(self, appointment: tuple, override = False) -> None: 
         '''
         @param appointment = (
             name: str, 
@@ -40,18 +47,22 @@ class Calendar:
             )
         type: tuple
         '''
-        self.appointments[appointment[0]] = appointment
-        self.updateCalendarFile()
+        print(self.appointments)
+        if appointment[0] in self.appointments.keys() and not override:
+            raise CalendarConflictError("Conflicting appointments occurred")
+        else:
+            self.appointments[appointment[0]] = appointment
+            self.updateCalendarFile()
 
     def deleteAppointment(self, appointmentName: str) -> None:
         del self.appointments[appointmentName]
         self.updateCalendarFile()
 
     def updateCalendarFile(self) -> None:
-        with open('../files/calendar.pickle', 'wb') as calendarFile:
-            pickle.dump(self.appointments, calendarFile)
+        calendarFile = open('../files/calendar.pkl', 'wb')
+        pickle.dump(self.appointments, calendarFile)
+        calendarFile.close()
 
-            
 
     def printCalendar(self) -> None:
         #with open('../files/calendar.pickle', 'rb') as calendarFile:
