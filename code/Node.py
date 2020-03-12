@@ -4,6 +4,7 @@ import Log
 import EventRecord as ER
 import numpy
 import Messenger
+import pickle
 
 class Node:
 
@@ -27,7 +28,7 @@ class Node:
 
 ## message proccessing: 
 
-    def receive(self, received_NP_log, received_timetable):
+    def receive(self, received_NP_log: list, received_timetable: numpy.array):
         """
 
         """
@@ -75,7 +76,7 @@ class Node:
         #self.log = [[er for er in self.log if not self.hasRec(er, j)] 
         #           for j in range(len(self.timeTable[0]))]
         updated_log = []
-        for er in self.log:
+        for er in self.log.log:
             for j in range(len(self.timeTable[0])):
                 if not self.hasRec(er, j):
                     updated_log.append(er)
@@ -91,8 +92,14 @@ class Node:
         """
         message to be sent
         """
-        NP = [eR for eR in self.log if not self.hasRec(eR, to_nodeId)]
-        print([NP, self.timeTable])
+        NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
+        printableNP = []
+        for eR in NP:
+            printableNP.append(eR.stringRepresentation)
+        print([printableNP, self.timeTable])
+        message = open('incoming.pkl', 'wb')
+        pickle.dump((NP, self.timeTable), message)
+        message.close()
         # send a message to other nodes when a change is made to the log
         # or as required to resolve conflicts. 
         # Use logProcessor to buld a PartialLog with hasrec() to include with
@@ -199,6 +206,21 @@ if __name__ == '__main__':
     node.addCalendarAppointment(otherAppointment)
     node.displayCalendar()
     print(node.timeTable)
+    node.send(3)
+
+    try:
+        read_file = open('incoming.pkl', 'rb')
+        incomingMessage = pickle.load(read_file)
+        read_file.close()
+    except FileNotFoundError:
+        print("No incoming message available to read in")
+    
+    incomingNPLog = incomingMessage[0]
+    incomingNPTimeTable = incomingMessage[1]
+    node.receive(incomingNPLog, incomingNPTimeTable)
+
+
+    
     
 
 """
