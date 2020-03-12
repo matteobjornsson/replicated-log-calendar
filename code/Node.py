@@ -187,14 +187,27 @@ if __name__ == '__main__':
     node = Node(4, 1)
     doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
     dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
+    skiingAppointment = ("Skiing", 3, 6.0, 17.0, [3])
+    otherAppointment = ("Other", 7, 1.0, 3.0, [1])
     node.addCalendarAppointment(doctorAppointment)
     node.addCalendarAppointment(dmvAppointment)
-    node.addCalendarAppointment(doctorAppointment)
+    node.addCalendarAppointment(skiingAppointment)
     # node.addCalendarAppointment()
     node.displayCalendar()
     node.deleteCalendarAppointment()
     node.displayCalendar()
+    node.addCalendarAppointment(otherAppointment)
+    node.displayCalendar()
+    print(node.timeTable)
     
 
-" Test Objects :" 
+"""
+time table at end of main():
 
+self.timeTable = 
+[[0. 0. 0. 0.]
+ [0. 5. 0. 0.]
+ [0. 0. 0. 0.]
+ [0. 0. 0. 0.]]
+
+"""
