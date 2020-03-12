@@ -65,7 +65,7 @@ class Calendar:
         else:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
-        """
+        
     def check_date_conflict(self, date1, date2):
         """
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
@@ -76,7 +76,7 @@ class Calendar:
             if date1[1] == date2[1]:
                 return True
             #Check if it ends at the same time
-            elif date1[2] == date2[2]
+            elif date1[2] == date2[2]:
                 return True
             #Check if there is overlap in start/end time
             elif max(0, min(date1[2], date2[2]) - max(date1[1], date2[1])) > 0:

@@ -25,56 +25,43 @@ class Node:
 
 ## message proccessing: 
 
-    '''
-    def receive(self, received_NP_log: list, received_timetable: numpy.array):
-        """
-
-        """
-        # TODO: who is sender for TT update
-        received_nodeID = 0 # This should be the nodeID from the message sender
+    def receive(self, received_NP_log, received_timetable):
+        # TODO: who is sender for TT update?
+        received_nodeID = 0
         for eventRecordFromNP in received_NP_log:
             #Create list of new eventrecords to update log later
             # (if time of incoming event time is newer (greater than) our 
             # TimeTable record of that node time append record to our log)
-            if not self.hasRec(eventRecordFromNP, self.nodeID):  
+            if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
                 self.log.append(eventRecordFromNP)
             if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
-    '''
-
-    def receive(self, received_NP_log, received_timetable):
-        #NE = [fr for fr in received_NP_log if not self.hasRec(fr, self.nodeID)]
-        received_nodeID = 0
-        for fr in received_NP_log:
-            if not self.hasRec(fr, self.nodeID):  #Create list of new eventrecords to update log later
-                self.log.append(fr)
-            if fr.operation == "Insert": #Update calendar object when inserting
                 #if received_nodeID == 0:
-                #    received_nodeID = fr.nodeID
+                #    received_nodeID = eventRecordFromNP.nodeID
                 """
                 Check if current node is participant in event, if yes: there may be conflicts!
                 If not, you can simply insert the event.
                 """
-                if self.nodeID in fr.appointment[4]:
+                if self.nodeID in eventRecordFromNP.appointment[4]:
                     try:
-                        self.calendar.insertAppointment(fr.appointment) #Check for conflict resolution
+                        self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
                     except ValueError:
                         #Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
                         if received_nodeID > self.nodeID:   
-                            self.calendar.insertAppointment(fr.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
+                            self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
                             
                         #Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
                         else: 
                             print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
                             #SEND DELETE TO NODES
                 else:
-                    self.calendar.insertAppointment(fr.appointment, override=True)
-            elif fr.operation == "Delete": #Update calendar object when deleting
-                self.calendar.deleteAppointment(fr.appointment[0])
+                    self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
+            elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting
+                self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 
-        for i in self.timeTable: #Update timetable
-            self.timeTable[self.nodeID, i] = max(self.timeTable[self.nodeID, i], received_timetable[received_nodeID, i])
-            for j in self.timeTable:
-                self.timeTable[i,j] = max(self.timeTable[i,j], received_timetable[i,j])
+        for i in range(len(self.timeTable[0])): #Update timetable
+            self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
+            for j in range(len(self.timeTable[0])):
+                self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
         
         #self.log = [[er for er in self.log if not self.hasRec(er, j)] 
         #           for j in range(len(self.timeTable[0]))]
@@ -209,6 +196,7 @@ if __name__ == '__main__':
     node.addCalendarAppointment(otherAppointment)
     node.displayCalendar()
     print(node.timeTable)
+
     node.send(3)
 
     try:
@@ -221,6 +209,7 @@ if __name__ == '__main__':
     incomingNPLog = incomingMessage[0]
     incomingNPTimeTable = incomingMessage[1]
     node.receive(incomingNPLog, incomingNPTimeTable)
+    print(node.timeTable)
 
 
     
