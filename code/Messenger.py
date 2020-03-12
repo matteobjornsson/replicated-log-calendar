@@ -1,6 +1,7 @@
 import socket
 import threading 
 import argparse
+import pickle
 from time import sleep
 
 class Messenger:
@@ -8,10 +9,11 @@ class Messenger:
     nodes = [(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
              (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
 
-    out_sockets = []
+    out_sockets = {}
     in_socket_threads = []
     allThreads = []
     message_queue = []
+    
 
 ######## Constructor ###### 
 
@@ -25,6 +27,7 @@ class Messenger:
             nodeSelf:: defines the ID of this node
         '''
         self.nodeID = nodeSelf
+        self.otherNodes = self.nodes[self.nodeID-1][3] 
 
         # start a thread to grant incoming connections from other nodes
         connection_thread = (
@@ -49,18 +52,17 @@ class Messenger:
         This method creates a socket for each node other than self, creating 
         a thread for that socket which tries to connect to the other node. 
         '''
-        #reference for what nodes to connect to
-        otherNodes = self.nodes[self.nodeID-1][3] 
 
         # generate 3 sockets and store them for reference
-        for i in range(0,3):
+        for node in self.otherNodes:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.out_sockets.append(s)
+            self.out_sockets[node] = s
+            print(self.out_sockets)
 
         # for each socket assign it a node and thread to connect to that node
-        for i in range(0,3):
-            hostSocket = self.out_sockets[i]
-            destinationNode = otherNodes[i]
+        for node in self.otherNodes:
+            hostSocket = self.out_sockets[node]
+            destinationNode = node
             destinationIP = self.nodes[destinationNode-1][1]
             destinationPort = self.nodes[destinationNode-1][2]
             
@@ -140,7 +142,7 @@ class Messenger:
             if not msg:
                 print("exiting socket")
                 break
-            msg = msg.decode("utf-8") #Decode messages for interpretation
+            msg = pickle.loads(msg)#Decode messages for interpretation
             self.message_queue.append(msg) # Append to msg queue
             print(msg)
 
@@ -149,14 +151,14 @@ class Messenger:
             message = ("Message from Node {} : ".format(self.nodeID) + '\"' 
                         + input("\nType a message to send to the other nodes:\n") 
                         + '\"')
-            b = bytes(message, 'utf-8')
-            for s in self.out_sockets:
-                s.sendall(b)
+            for node in self.otherNodes:
+                self.send(node, message)
 
 ######  Normal Operation Methods ###### 
-    # TODO:
-    # def send(self, N, m):
-        # send the thing
+    
+    def send(self, N, m):
+        message = pickle.dumps(m)
+        self.out_sockets[N].sendall(message)
 
     
 ######  Recovery Methods ######
