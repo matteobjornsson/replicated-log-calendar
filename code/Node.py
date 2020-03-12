@@ -5,6 +5,7 @@ import EventRecord as ER
 import numpy
 import Messenger
 import pickle
+import argparse
 
 class Node:
 
@@ -16,7 +17,7 @@ class Node:
         self.nodeID = i
         self.log = Log.Log() 
         self.calendar = Calendar.Calendar() 
-        #self.messenger = Messenger.Messenger(i)
+        self.messenger = Messenger.Messenger(i)
 
 ## clock:
     def clock(self) -> int:
@@ -59,7 +60,7 @@ class Node:
                 self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 
         for i in range(len(self.timeTable[0])): #Update timetable
-            self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
+            self.timeTable[self.nodeID-1][i] = max(self.timeTable[self.nodeID-1][i], received_timetable[received_nodeID-1][i])
             for j in range(len(self.timeTable[0])):
                 self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
         
@@ -84,6 +85,10 @@ class Node:
         message to be sent
         """
         NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
+        message = (NP, self.timeTable)
+        self.messenger.send(to_nodeId, message)
+
+        ''' This is for testing: 
         printableNP = []
         for eR in NP:
             printableNP.append(eR.stringRepresentation)
@@ -91,10 +96,7 @@ class Node:
         message = open('incoming1.pkl', 'wb')
         pickle.dump((NP, self.timeTable), message)
         message.close()
-        # send a message to other nodes when a change is made to the log
-        # or as required to resolve conflicts. 
-        # Use logProcessor to buld a PartialLog with hasrec() to include with
-        # message. 
+        '''
 
 #    def addEventToLog(self, eR: EventRecord) -> void:
         # use logProcessor object to add record to text file. 
@@ -127,7 +129,7 @@ class Node:
             appointment = (name, day, start_time, end_time, participants)
         
         lamportTime = self.clock()
-        self.timeTable[self.nodeID][self.nodeID] = lamportTime
+        self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
         eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
         self.log.insert(eR)
         try:
@@ -148,7 +150,7 @@ class Node:
             )
         if self.calendar.contains(appointmentName):
             lamportTime = self.clock()
-            self.timeTable[self.nodeID][self.nodeID] = lamportTime
+            self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
             eR = ER.EventRecord(
                 "Delete", 
                 self.calendar.getAppointment(appointmentName), 
@@ -175,14 +177,18 @@ class Node:
         self.calendar.deleteAppointment(appointmentName)
 
     def hasRec(self, eR, otherNodeId: int):
-        if self.timeTable[otherNodeId, eR.nodeID] >= eR.lamportTime:
+        if self.timeTable[otherNodeId-1][eR.nodeID-1] >= eR.lamportTime:
             return True
         else:
             return False
 
 
 if __name__ == '__main__':
-    node = Node(4, 1)
+    parser =  argparse.ArgumentParser(description='Node instance')
+    parser.add_argument('nodeID', help='NodeID.', type=int)
+    args = parser.parse_args()
+
+    node = Node(4, args.nodeID)
     doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
     dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
     skiingAppointment = ("Skiing", 3, 6.0, 17.0, [3])
