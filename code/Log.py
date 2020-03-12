@@ -27,6 +27,8 @@ class Log:
         self.log = log
         self.logfile = logfile
         file_path = '../files/logOutput.tsv'
+        if not os.path.isdir('../files'):
+            os.mkdir('../files')
         try:
             with open(file_path, 'r') as read_file:
                 csv_reader = csv.reader(read_file, delimiter='\t')

@@ -1,4 +1,5 @@
 import pickle
+import os
 
 class CalendarConflictError(ValueError):
     '''Raise error when a conflicting appointment occurs'''
@@ -25,6 +26,8 @@ class Calendar:
 
     def __init__(self, appointments = {}):
         #self.appointments = {}
+        if not os.path.isdir('../files'):
+            os.mkdir('../files')
         try:
             read_file = open('../files/calendar.pkl', 'rb')
             self.appointments = pickle.load(read_file)
