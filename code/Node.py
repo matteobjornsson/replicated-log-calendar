@@ -196,6 +196,18 @@ if __name__ == '__main__':
     node.addCalendarAppointment(newAppointment)
     node.displayCalendar()
     print(node.timeTable)
+    node.send(3)
+
+    try:
+        read_file = open('incoming.pkl', 'rb')
+        incomingMessage = pickle.load(read_file)
+        read_file.close()
+    except FileNotFoundError:
+        print("No incoming message available to read in")
+    
+    incomingNPLog = incomingMessage[0]
+    incomingNPTimeTable = incomingMessage[1]
+    node.receive(incomingNPLog, incomingNPTimeTable)
 
 " Test Objects :" 
 '''
