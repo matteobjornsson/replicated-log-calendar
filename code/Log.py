@@ -26,6 +26,8 @@ class Log:
     def __init__(self, log = [], logfile = ""):
         self.log = log
         self.logfile = logfile
+        if not os.path.isdir('../files'):
+            os.mkdir('../files')  
         file_path = '../files/logOutput.tsv'
         if not os.path.isdir('../files'):
             os.mkdir('../files')

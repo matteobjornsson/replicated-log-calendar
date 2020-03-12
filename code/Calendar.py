@@ -1,5 +1,4 @@
-import pickle
-import os
+import pickle, os
 
 class CalendarConflictError(ValueError):
     '''Raise error when a conflicting appointment occurs'''
@@ -27,7 +26,8 @@ class Calendar:
     def __init__(self, appointments = {}):
         #self.appointments = {}
         if not os.path.isdir('../files'):
-            os.mkdir('../files')
+            os.mkdir('../files')  
+        #file_path = '../files/logOutput.tsv'
         try:
             read_file = open('../files/calendar.pkl', 'rb')
             self.appointments = pickle.load(read_file)
@@ -37,7 +37,7 @@ class Calendar:
             self.appointments = appointments
             print("No calendar object available to read in")
         self.updateCalendarFile() 
-        
+
     def insertAppointment(self, appointment: tuple, override = False) -> None: 
         '''
         @param appointment = (
@@ -49,13 +49,42 @@ class Calendar:
             )
         type: tuple
         '''
-        print(self.appointments)
-        #TODO: check for time conflict
-        if appointment[0] in self.appointments.keys() and not override:
-            raise CalendarConflictError("Conflicting appointments occurred")
+
+        #create date tuple for incoming appointment
+        incoming_appt_date = (appointment[1], appointment[2], appointment[3])
+
+        #If override == False, i.e., the incoming appt needs to be checked for conflicts 
+        #   because the current node is part of the attendees, 
+        #   iterate over all existing appointments in current calendar
+        if not override:
+            for appt_name, appt in self.appointments.items():
+                existing_appt_date = (appt[1], appt[2], appt[3])
+
+                if self.check_date_conflict(existing_appt_date, incoming_appt_date):
+                    raise CalendarConflictError("Conflicting appointments occurred")
         else:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
+        """
+    def check_date_conflict(self, date1, date2):
+        """
+        Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
+        """
+        #Check if event is on the same day
+        if date1[0] == date2[0]:
+            #Check if it starts at the same time
+            if date1[1] == date2[1]:
+                return True
+            #Check if it ends at the same time
+            elif date1[2] == date2[2]
+                return True
+            #Check if there is overlap in start/end time
+            elif max(0, min(date1[2], date2[2]) - max(date1[1], date2[1])) > 0:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
         del self.appointments[appointmentName]
