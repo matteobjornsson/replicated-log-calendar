@@ -33,7 +33,7 @@ class Node:
             # (if time of incoming event time is newer (greater than) our 
             # TimeTable record of that node time append record to our log)
             if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
-                self.log.append(eventRecordFromNP)
+                self.log.insert(eventRecordFromNP)
             if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
                 #if received_nodeID == 0:
                 #    received_nodeID = eventRecordFromNP.nodeID
@@ -87,7 +87,7 @@ class Node:
         for eR in NP:
             printableNP.append(eR.stringRepresentation)
         print([printableNP, self.timeTable])
-        message = open('incoming.pkl', 'wb')
+        message = open('incoming2.pkl', 'wb')
         pickle.dump((NP, self.timeTable), message)
         message.close()
         # send a message to other nodes when a change is made to the log
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     node.send(3)
 
     try:
-        read_file = open('incoming.pkl', 'rb')
+        read_file = open('incoming1.pkl', 'rb')
         incomingMessage = pickle.load(read_file)
         read_file.close()
     except FileNotFoundError:
@@ -209,7 +209,8 @@ if __name__ == '__main__':
     incomingNPLog = incomingMessage[0]
     incomingNPTimeTable = incomingMessage[1]
     node.receive(incomingNPLog, incomingNPTimeTable)
-
+    node.displayCalendar()
+    print(node.timeTable)
 
 " Test Objects :" 
 '''
