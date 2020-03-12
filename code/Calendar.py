@@ -21,7 +21,6 @@ class Calendar:
         printCalendar()
         
     '''
-
     calendarFile = None
 
     def __init__(self, appointments = {}):
