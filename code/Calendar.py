@@ -27,8 +27,12 @@ class Calendar:
         #self.appointments = {}
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
+<<<<<<< HEAD
         file_path = '../files/logOutput.tsv'
 
+=======
+        #file_path = '../files/logOutput.tsv'
+>>>>>>> 7bf4e0c936067f3e57eb44d95e5ae0fb2cc44cd8
         try:
             read_file = open('../files/calendar.pkl', 'rb')
             self.appointments = pickle.load(read_file)
@@ -66,7 +70,7 @@ class Calendar:
         else:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
-        """
+        
     def check_date_conflict(self, date1, date2):
         """
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
@@ -77,7 +81,7 @@ class Calendar:
             if date1[1] == date2[1]:
                 return True
             #Check if it ends at the same time
-            elif date1[2] == date2[2]
+            elif date1[2] == date2[2]:
                 return True
             #Check if there is overlap in start/end time
             elif max(0, min(date1[2], date2[2]) - max(date1[1], date2[1])) > 0:
