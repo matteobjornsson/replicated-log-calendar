@@ -6,9 +6,6 @@ import numpy
 
 class Node:
 
-#   logProcessor = LogProcessor #not sure if this should be instantiated here 
-#   or in the methods that would use it. 
-
 ## constructor: 
 
     def __init__(self, N: int, i: int):
@@ -32,16 +29,26 @@ class Node:
             if not self.hasRec(fr, self.nodeID):  #Create list of new eventrecords to update log later
                 self.log.append(fr)
             if fr.operation == "Insert": #Update calendar object when inserting
-                if received_nodeID == 0:
-                    received_nodeID = fr.nodeID
-                try:
-                    self.calendar.insertAppointment(fr.appointment) #Check for conflict resolution
-                except ValueError:
-                    if received_nodeID > self.nodeID:   #Tiebreaker based on node id's, higher node id wins the insert right.
-                        self.calendar.insertAppointment(fr.appointment, override=True)
-                    else:
-                        print("Appointment was not inserted because an appointment with the name '%s' already exists."%(fr.appointment[0]))
-
+                #if received_nodeID == 0:
+                #    received_nodeID = fr.nodeID
+                """
+                Check if current node is participant in event, if yes: there may be conflicts!
+                If not, you can simply insert the event.
+                """
+                if self.nodeID in fr.appointment[4]:
+                    try:
+                        self.calendar.insertAppointment(fr.appointment) #Check for conflict resolution
+                    except ValueError:
+                        #Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
+                        if received_nodeID > self.nodeID:   
+                            self.calendar.insertAppointment(fr.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
+                            
+                        #Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
+                        else: 
+                            print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
+                            #SEND DELETE TO NODES
+                else:
+                    self.calendar.insertAppointment(fr.appointment, override=True)
             elif fr.operation == "Delete": #Update calendar object when deleting
                 self.calendar.deleteAppointment(fr.appointment[0])
 
