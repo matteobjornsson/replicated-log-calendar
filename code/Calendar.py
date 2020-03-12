@@ -59,9 +59,13 @@ class Calendar:
         if not override:
             for appt_name, appt in self.appointments.items():
                 existing_appt_date = (appt[1], appt[2], appt[3])
-
+                # TODO: I think we need to change this logic so that check date conflict
+                # automatically checks all in log given incoming date, returns boolean. 
                 if self.check_date_conflict(existing_appt_date, incoming_appt_date):
                     raise CalendarConflictError("Conflicting appointments occurred")
+                       
+            self.appointments[appointment[0]] = appointment
+            self.updateCalendarFile()
         else:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
