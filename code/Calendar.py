@@ -57,12 +57,10 @@ class Calendar:
         #   because the current node is part of the attendees, 
         #   iterate over all existing appointments in current calendar
         if not override:
-            for appt_name, appt in self.appointments.items():
-                existing_appt_date = (appt[1], appt[2], appt[3])
-                # TODO: I think we need to change this logic so that check date conflict
-                # automatically checks all in log given incoming date, returns boolean. 
-                if self.check_date_conflict(existing_appt_date, incoming_appt_date):
-                    raise CalendarConflictError("Conflicting appointments occurred")
+            # TODO: I think we need to change this logic so that check date conflict
+            # automatically checks all in log given incoming date, returns boolean. 
+            if self.check_date_conflict(incoming_appt_date):
+                raise CalendarConflictError("Conflicting appointments occurred")
                        
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
@@ -70,25 +68,27 @@ class Calendar:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
         
-    def check_date_conflict(self, date1, date2):
+    def check_date_conflict(self, incoming_date):
         """
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
         """
         #Check if event is on the same day
-        if date1[0] == date2[0]:
-            #Check if it starts at the same time
-            if date1[1] == date2[1]:
-                return True
-            #Check if it ends at the same time
-            elif date1[2] == date2[2]:
-                return True
-            #Check if there is overlap in start/end time
-            elif max(0, min(date1[2], date2[2]) - max(date1[1], date2[1])) > 0:
-                return True
+        for appt_name, appt in self.appointments.items():
+            existing_date = (appt[1], appt[2], appt[3])
+            if existing_date[0] == incoming_date[0]:
+                #Check if it starts at the same time
+                if existing_date[1] == incoming_date[1]:
+                    return True
+                #Check if it ends at the same time
+                elif existing_date[2] == incoming_date[2]:
+                    return True
+                #Check if there is overlap in start/end time
+                elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
+                    return True
+                else:
+                    return False
             else:
                 return False
-        else:
-            return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
         del self.appointments[appointmentName]
