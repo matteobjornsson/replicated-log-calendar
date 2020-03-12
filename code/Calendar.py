@@ -28,7 +28,7 @@ class Calendar:
         try:
             read_file = open('../files/calendar.pkl', 'rb')
             self.appointments = pickle.load(read_file)
-            print("pickle: ",self.appointments)
+            print("Unpickled: ",self.appointments)
             read_file.close()
         except FileNotFoundError:
             self.appointments = appointments
@@ -47,6 +47,7 @@ class Calendar:
         type: tuple
         '''
         print(self.appointments)
+        #TODO: check for time conflict
         if appointment[0] in self.appointments.keys() and not override:
             raise CalendarConflictError("Conflicting appointments occurred")
         else:
@@ -56,6 +57,7 @@ class Calendar:
     def deleteAppointment(self, appointmentName: str) -> None:
         del self.appointments[appointmentName]
         self.updateCalendarFile()
+        # TODO: check for existing delete
 
     def updateCalendarFile(self) -> None:
         calendarFile = open('../files/calendar.pkl', 'wb')

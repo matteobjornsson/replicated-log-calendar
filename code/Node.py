@@ -18,7 +18,7 @@ class Node:
         self.nodeID = i
         self.log = Log.Log() 
         self.calendar = Calendar.Calendar() 
-        self.messenger = Messenger.Messenger()
+        #self.messenger = Messenger.Messenger(i)
 
 ## clock:
     def clock(self) -> int:
@@ -28,29 +28,47 @@ class Node:
 ## message proccessing: 
 
     def receive(self, received_NP_log, received_timetable):
-        #NE = [fr for fr in received_NP_log if not self.hasRec(fr, self.nodeID)]
-        received_nodeID = 0
-        for fr in received_NP_log:
-            if not self.hasRec(fr, self.nodeID):  #Create list of new eventrecords to update log later
-                self.log.append(fr)
-            if fr.operation == "Insert": #Update calendar object when inserting
-                if received_nodeID == 0:
-                    received_nodeID = fr.nodeID
+        """
+
+        """
+        # TODO: who is sender for TT update
+        received_nodeID = 0 # This should be the nodeID from the message sender
+        for eventRecordFromNP in received_NP_log:
+            #Create list of new eventrecords to update log later
+            # (if time of incoming event time is newer (greater than) our 
+            # TimeTable record of that node time append record to our log)
+            if not self.hasRec(eventRecordFromNP, self.nodeID):  
+                self.log.append(eventRecordFromNP)
+            if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
+                #if received_nodeID == 0:
+                    #received_nodeID = eventRecordFromNP.nodeID 
                 try:
-                    self.calendar.insertAppointment(fr.appointment) #Check for conflict resolution
+                    #Check for conflict resolution
+                    self.calendar.insertAppointment(eventRecordFromNP.appointment) 
                 except ValueError:
-                    if received_nodeID > self.nodeID:   #Tiebreaker based on node id's, higher node id wins the insert right.
-                        self.calendar.insertAppointment(fr.appointment, override=True)
-                    else:
-                        print("Appointment was not inserted because an appointment with the name '%s' already exists."%(fr.appointment[0]))
+                    #Tiebreaker: higher node id wins the insert right.
+                    if received_nodeID > self.nodeID:   
+                        self.calendar.insertAppointment(
+                            eventRecordFromNP.appointment, override=True
+                            )
+                            #TODO: need to delete conflicting event here and notify self node
 
-            elif fr.operation == "Delete": #Update calendar object when deleting
-                self.calendar.deleteAppointment(fr.appointment[0])
+                    else: #TODO: send a message back to all nodes to delete the appointment that conflicted
+                        print(
+                            "Appointment was not inserted because an " 
+                            "appointment with the name '%s' "
+                            "already exists."%(eventRecordFromNP.appointment[0])
+                            )
 
-        for i in self.timeTable: #Update timetable
+            elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting
+                self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
+                #TODO: throw an exception if no event exists (already deleted)
+                #TODO: check log for delete of same name first
+
+        for i in range(len(self.timeTable[0])): #Update timetable
             self.timeTable[self.nodeID, i] = max(self.timeTable[self.nodeID, i],
                                          received_timetable[received_nodeID, i])
-            for j in self.timeTable:
+            for j in range(len(self.timeTable[0])):
                 self.timeTable[i,j] = max(self.timeTable[i,j], 
                                         received_timetable[i,j])
         
@@ -66,17 +84,19 @@ class Node:
         # process incoming messages. Update the timeTable and calendar accordingly. 
         # options:  add appointment
         #           delete appointment
-        # add any appointments to the log by passing an eventRecord object to addEventToLog()
+        # add any appointments to the log by passing an eventRecord object to 
+        # addEventToLog()
 
     def send(self, to_nodeId):
         """
         message to be sent
         """
-        NP = [er for er in self.log if not self.hasRec(eR, to_nodeId)]
+        NP = [eR for eR in self.log if not self.hasRec(eR, to_nodeId)]
         print([NP, self.timeTable])
         # send a message to other nodes when a change is made to the log
         # or as required to resolve conflicts. 
-        # Use logProcessor to buld a PartialLog with hasrec() to include with message. 
+        # Use logProcessor to buld a PartialLog with hasrec() to include with
+        # message. 
 
 #    def addEventToLog(self, eR: EventRecord) -> void:
         # use logProcessor object to add record to text file. 
@@ -116,7 +136,9 @@ class Node:
             self.calendar.insertAppointment(appointment)
         except ValueError:
             print("Appointment already exists.")
-            confirm_update = input("Would you like to override the existing appointment? (y/n)")
+            confirm_update = input(
+                "Would you like to override the existing appointment? (y/n)"
+                )
             if confirm_update == "y":
                 self.calendar.insertAppointment(appointment, override = True)
         print("\"{}\" added to calendar.".format(appointment[0]))
@@ -173,4 +195,6 @@ if __name__ == '__main__':
     node.deleteCalendarAppointment()
     node.displayCalendar()
     
+
+" Test Objects :" 
 
