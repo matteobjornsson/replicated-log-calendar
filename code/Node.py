@@ -6,6 +6,7 @@ import numpy
 import Messenger
 import pickle
 import argparse
+import threading
 
 class Node:
 
@@ -18,6 +19,11 @@ class Node:
         self.log = Log.Log() 
         self.calendar = Calendar.Calendar() 
         self.messenger = Messenger.Messenger(i)
+		
+		# listen for incoming messages on messege queue, pop and recieve
+		receive_msg_thread = threading.Thread(
+                target=self.check_for_incoming_messages))
+		receive_msg_thread.start()
 
 ## clock:
     def clock(self) -> int:
@@ -73,6 +79,9 @@ class Node:
                 if not self.hasRec(er, j):
                     updated_log.append(er)
         self.log = updated_log
+		print(self.log.log)
+		print(self.calendar.appointments)
+		print(self.timeTable)
 
         # process incoming messages. Update the timeTable and calendar accordingly. 
         # options:  add appointment
@@ -104,6 +113,14 @@ class Node:
 
 #    def updateTimeTable(self):
         # helper method for receive(), should include add'l parameters
+
+	def check_for_incoming_messages(self):
+		'''
+		listen for incoming messages on messege queue, pop and recieve
+		'''
+		while True:
+			if not self.messenger.message_queue == []:
+				self.receive(messenger.message_queue.pop(0))
 
 
 ## User interaction logic: 
@@ -206,7 +223,7 @@ if __name__ == '__main__':
     print(node.timeTable)
 
     node.send(3)
-
+'''
     try:
 
         read_file = open('incoming1.pkl', 'rb')
@@ -219,6 +236,7 @@ if __name__ == '__main__':
     incomingNPLog = incomingMessage[0]
     incomingNPTimeTable = incomingMessage[1]
     node.receive(incomingNPLog, incomingNPTimeTable)
+'''
     node.displayCalendar()
     print(node.timeTable)
 
