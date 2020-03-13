@@ -29,8 +29,7 @@ class Log:
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
         file_path = '../files/logOutput.tsv'
-        if not os.path.isdir('../files'):
-            os.mkdir('../files')
+
         try:
             with open(file_path, 'r') as read_file:
                 csv_reader = csv.reader(read_file, delimiter='\t')
@@ -55,7 +54,7 @@ class Log:
         print("this is the truncate function")
 
     def read_log_line(self, line):
-        print(line[7])
+        #print(line[7])
         participants = [p for p in ast.literal_eval(line[7])]
         appointment = (line[3], line[4], line[5], line[6], participants)
         new_record = EventRecord.EventRecord(line[2], appointment, int(line[0]), int(line[1]))
