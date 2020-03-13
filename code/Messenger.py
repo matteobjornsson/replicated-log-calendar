@@ -7,7 +7,6 @@ class Messenger:
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
-	file_path = '../files/nodeAddresses.tsv'
 	
 
 ######## Constructor ###### 
@@ -24,6 +23,7 @@ class Messenger:
 		self.nodes = self.read_in_node_addresses()
 		self.nodeID = nodeSelf
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
+		self.file_path = '../files/nodeAddresses.tsv'
 
 		# start a thread to grant incoming connections from other nodes
 		connection_thread = (
