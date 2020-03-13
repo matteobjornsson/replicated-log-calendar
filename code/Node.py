@@ -19,6 +19,12 @@ class Node:
         self.calendar = Calendar.Calendar() 
         self.messenger = Messenger.Messenger(i)
 
+		# listen for incoming messages on messege queue, pop and recieve
+		receive_msg_thread = threading.Thread(
+			target=self.check_for_incoming_messages
+			)
+		receive_msg_thread.start()
+
 ## clock:
     def clock(self) -> int:
         self.lamportTime += 1
