@@ -28,12 +28,15 @@ class Node:
     def receive(self, received_NP_log, received_timetable):
         # TODO: who is sender for TT update?
         received_nodeID = 0
+        delete_events = {}
+        insert_events = {}
         for eventRecordFromNP in received_NP_log:
+            if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
+                self.log.insert(eventRecordFromNP) #self.log.insert(eventRecordFromNP)
+
             #Create list of new eventrecords to update log later
             # (if time of incoming event time is newer (greater than) our 
             # TimeTable record of that node time append record to our log)
-            if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
-                self.log.insert(eventRecordFromNP)
             if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
                 #if received_nodeID == 0:
                 #    received_nodeID = eventRecordFromNP.nodeID
@@ -48,16 +51,18 @@ class Node:
                         #Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
                         if received_nodeID > self.nodeID:   
                             self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
-                            
+                            insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
                         #Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
                         else: 
                             print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
                             #SEND DELETE TO NODES
                 else:
                     self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
-            elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting
+                    insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+            elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
                 self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
-
+                delete_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+            #TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
         for i in range(len(self.timeTable[0])): #Update timetable
             self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
             for j in range(len(self.timeTable[0])):
@@ -67,11 +72,15 @@ class Node:
         #           for j in range(len(self.timeTable[0]))]
         #TODO: we need to be using log.insert() so it gets written to file instead of appending directly to log attribute
         updated_log = []
-        for er in self.log.log:
+        for er in (self.log.log):
             for j in range(len(self.timeTable[0])):
                 if not self.hasRec(er, j):
                     updated_log.append(er)
-        self.log = updated_log
+                    print("at node", j)
+                    break
+            print("interùediate log: ", updated_log)
+        print("finished updating log: ", updated_log)
+        self.log.truncateLog(updated_log)
 
         # process incoming messages. Update the timeTable and calendar accordingly. 
         # options:  add appointment

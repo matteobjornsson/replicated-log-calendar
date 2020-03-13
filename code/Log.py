@@ -28,31 +28,35 @@ class Log:
         self.logfile = logfile
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
-        file_path = '../files/logOutput.tsv'
-        if not os.path.isdir('../files'):
-            os.mkdir('../files')
+        self.file_path = '../files/logOutput.tsv'
+
         try:
-            with open(file_path, 'r') as read_file:
+            with open(self.file_path, 'r') as read_file:
                 csv_reader = csv.reader(read_file, delimiter='\t')
                 next(csv_reader)
                 for line in csv_reader:
                     self.log.append(self.read_log_line(line))
                     #line = read_file.readline()
         except FileNotFoundError:
-            with open(file_path, 'w+') as out_file:
+            with open(self.file_path, 'w+') as out_file:
                 logWriter = csv.writer(out_file, delimiter='\t')
                 logWriter.writerow(self.header)
 
     def insert(self, eR: EventRecord):
         self.log.append(eR)
+        """
         with open('../files/logOutput.tsv', 'a') as out_file:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
-
-    def truncateLog(self, listOfEventRecords: list):
+        """
+    def truncateLog(self, eventRecords):
         # if all nodes know of an eventRecord, delete it from the local log
-        # do that ^
-        print("this is the truncate function")
+        # do that 
+        with open(self.file_path, 'w') as out_file:
+            logWriter = csv.writer(out_file, delimiter='\t')
+            for eR in eventRecords:
+                logWriter.writerow(eR.iterable)
+        self.log = eventRecords
 
     def read_log_line(self, line):
         print(line[7])
