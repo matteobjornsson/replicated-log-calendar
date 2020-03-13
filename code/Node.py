@@ -110,6 +110,14 @@ class Node:
 #    def updateTimeTable(self):
         # helper method for receive(), should include add'l parameters
 
+	def check_for_incoming_messages(self):
+		'''
+		listen for incoming messages on messege queue, pop and recieve
+		'''
+		while True:
+			if not self.messenger.message_queue == []:
+				self.receive(messenger.message_queue.pop(0))
+
 
 ## User interaction logic: 
 
