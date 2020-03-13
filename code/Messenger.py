@@ -150,7 +150,7 @@ class Messenger:
                 break
             unpickled_message = pickle.loads(packet)#Decode messages for interpretation
             self.message_queue.append(unpickled_message) # Append to msg queue
-            print(unpickled_message)
+            #print(unpickled_message)
 
     def test(self):
         while True:
