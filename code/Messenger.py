@@ -57,7 +57,6 @@ class Messenger:
         for node in self.otherNodes:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.out_sockets[node] = s
-            print(self.out_sockets)
 
         # for each socket assign it a node and thread to connect to that node
         for node in self.otherNodes:
@@ -136,15 +135,22 @@ class Messenger:
             connection:: socket channel to listen on
         """
         #Continually listen for msgs
+        buffer_size = 1024
         while True:
-            msg = connection.recv(1024)
+            packet = b''
+            while True:
+                chunk = connection.recv(buffer_size)
+                packet += chunk
+                if len(chunk) < buffer_size:
+                    break
+                
             #report when a connection closes or fails. 
-            if not msg:
+            if not packet:
                 print("exiting socket")
                 break
-            msg = pickle.loads(msg)#Decode messages for interpretation
-            self.message_queue.append(msg) # Append to msg queue
-            print(msg)
+            unpickled_message = pickle.loads(packet)#Decode messages for interpretation
+            self.message_queue.append(unpickled_message) # Append to msg queue
+            print(unpickled_message)
 
     def test(self):
         while True:
@@ -174,4 +180,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     messenger = Messenger(args.nodeID)
-    messenger.test()
+    #messenger.test()
