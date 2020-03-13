@@ -31,7 +31,6 @@ class Calendar:
         try:
             read_file = open('../files/calendar.pkl', 'rb')
             self.appointments = pickle.load(read_file)
-            print("Unpickled: ",self.appointments)
             read_file.close()
         except FileNotFoundError:
             self.appointments = appointments

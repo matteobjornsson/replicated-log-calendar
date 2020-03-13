@@ -26,85 +26,98 @@ class Node:
 			)
 		receive_msg_thread.start()
 
-## clock:
+	## clock:
 	def clock(self) -> int:
 		self.lamportTime += 1
 		return self.lamportTime
 
-## message proccessing: 
+	## message proccessing: 
 
-    def receive(self, received_NP_log, received_timetable):
-        # TODO: who is sender for TT update?
-        received_nodeID = 0
-        delete_events = {}
-        insert_events = {}
-        for eventRecordFromNP in received_NP_log:
-            if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
-                self.log.insert(eventRecordFromNP) #self.log.insert(eventRecordFromNP)
+	def receive(self, received_NP_log, received_timetable):
+		"""
+		process incoming messages. Update the timeTable and calendar accordingly. 
+		options:  add appointment
+					delete appointment
+		add any appointments to the log by passing an eventRecord object to 
+		addEventToLog()
+		"""
+		# TODO: who is sender for TT update?
+		received_nodeID = 0
+		delete_events = {}
+		insert_events = {}
+		for eventRecordFromNP in received_NP_log:
+			if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
+				self.log.insert(eventRecordFromNP) #self.log.insert(eventRecordFromNP)
 
-            #Create list of new eventrecords to update log later
-            # (if time of incoming event time is newer (greater than) our 
-            # TimeTable record of that node time append record to our log)
-            if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
-                #if received_nodeID == 0:
-                #    received_nodeID = eventRecordFromNP.nodeID
-                """
-                Check if current node is participant in event, if yes: there may be conflicts!
-                If not, you can simply insert the event.
-                """
-                if self.nodeID in eventRecordFromNP.appointment[4]:
-                    try:
-                        self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
-                    except ValueError:
-                        #Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
-                        if received_nodeID > self.nodeID:   
-                            self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
-                            insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
-                        #Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
-                        else: 
-                            print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
-                            #SEND DELETE TO NODES
-                else:
-                    self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
-                    insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
-            elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
-                self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
-                delete_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
-            #TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
-        for i in range(len(self.timeTable[0])): #Update timetable
-            self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
-            for j in range(len(self.timeTable[0])):
-                self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
+			#Create list of new eventrecords to update log later
+			# (if time of incoming event time is newer (greater than) our 
+			# TimeTable record of that node time append record to our log)
+			if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
+				#if received_nodeID == 0:
+				#    received_nodeID = eventRecordFromNP.nodeID
+				"""
+				Check if current node is participant in event, if yes: there may be conflicts!
+				If not, you can simply insert the event.
+				"""
+				if self.nodeID in eventRecordFromNP.appointment[4]:
+					try:
+						self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
+					except ValueError:
+						#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
+						if received_nodeID > self.nodeID:   
+							self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
+							insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
+						else: 
+							print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
+							#SEND DELETE TO NODES
+				else:
+					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
+					insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
+				self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
+				delete_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
+
+		#Update timetable
+		self.update_timetable()
+
+		#Write new log to file
+		self.update_log()
+
+	def update_log(self):
+		"""
+		Only keep relevant events based on timetable entrances 
+		and write the collected relevant events to file.
+		Effectively, this is the truncate log event.
+		"""
+		updated_log = []
+		for er in (self.log.log):
+			for j in range(len(self.timeTable[0])):
+				if not self.hasRec(er, j):
+					updated_log.append(er)
+					print("at node", j)
+					break
+		self.log.truncateLog(updated_log)
+
+	def update_timetable(self, received_timetable):
+		for i in range(len(self.timeTable[0])): 
+			self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
+			for j in range(len(self.timeTable[0])):
+				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
         
 
-        updated_log = []
-        for er in (self.log.log):
-            for j in range(len(self.timeTable[0])):
-                if not self.hasRec(er, j):
-                    updated_log.append(er)
-                    print("at node", j)
-                    break
-            print("interùediate log: ", updated_log)
-        print("finished updating log: ", updated_log)
-        self.log.truncateLog(updated_log)
-
-        # process incoming messages. Update the timeTable and calendar accordingly. 
-        # options:  add appointment
-        #           delete appointment
-        # add any appointments to the log by passing an eventRecord object to 
-        # addEventToLog()
-
-    def send(self, to_nodeId):
-        """
-        message to be sent
-        """
-        NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
-        message = (NP, self.timeTable)
+	def send(self, to_nodeId):
+		"""
+		message to be sent
+		"""
+		NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
+		message = (NP, self.timeTable)
 		self.messenger.send(to_nodeId, message)
-        # send a message to other nodes when a change is made to the log
-        # or as required to resolve conflicts. 
-        # Use logProcessor to buld a PartialLog with hasrec() to include with
-        # message. 
+		# send a message to other nodes when a change is made to the log
+		# or as required to resolve conflicts. 
+		# Use logProcessor to buld a PartialLog with hasrec() to include with
+		# message. 
 
 		''' This is for testing: 
 		printableNP = []
@@ -118,9 +131,6 @@ class Node:
 
 #    def addEventToLog(self, eR: EventRecord) -> void:
 		# use logProcessor object to add record to text file. 
-
-#    def updateTimeTable(self):
-		# helper method for receive(), should include add'l parameters
 
 	def check_for_incoming_messages(self):
 		'''
