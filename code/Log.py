@@ -59,7 +59,7 @@ class Log:
         self.log = eventRecords
 
     def read_log_line(self, line):
-        print(line[7])
+        #print(line[7])
         participants = [p for p in ast.literal_eval(line[7])]
         appointment = (line[3], line[4], line[5], line[6], participants)
         new_record = EventRecord.EventRecord(line[2], appointment, int(line[0]), int(line[1]))
