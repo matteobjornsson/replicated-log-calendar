@@ -1,18 +1,13 @@
-import socket
-import threading 
-import argparse
-import pickle
+import socket, threading, argparse, pickle, csv, ast
 from time import sleep
 
 class Messenger:
-
-	nodes = [(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
-			 (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
 
 	out_sockets = {}
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
+	file_path = '../files/nodeAddresses.tsv'
 	
 
 ######## Constructor ###### 
@@ -26,6 +21,7 @@ class Messenger:
 		@Param:
 			nodeSelf:: defines the ID of this node
 		'''
+		self.nodes = self.read_in_node_addresses()
 		self.nodeID = nodeSelf
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
 
@@ -44,6 +40,17 @@ class Messenger:
 			t.join()
 
 		print("\n** NODE ", self.nodeID, " connected to all other nodes. **\n")
+
+	def read_in_node_addresses(self):
+		nodes = []
+		with open(self.file_path, 'r') as read_file:
+			csv_reader = csv.reader(read_file, delimiter='\t')
+			next(csv_reader)
+			for line in csv_reader:
+				otherNodes = [n for n in ast.literal_eval(line[3])]
+				n = (int(line[0]), line[1], int(line[2]), otherNodes)
+				nodes.append(n)
+		return nodes
 
 ###### Initialization Methods ###### 
 
