@@ -10,6 +10,7 @@ class Messenger:
 	
 
 ######## Constructor ###### 
+	file_path = '../files/nodeAddresses.tsv'
 
 	def __init__(self, nodeSelf: int):
 		'''
@@ -23,7 +24,7 @@ class Messenger:
 		self.nodes = self.read_in_node_addresses()
 		self.nodeID = nodeSelf
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
-		self.file_path = '../files/nodeAddresses.tsv'
+		
 
 		# start a thread to grant incoming connections from other nodes
 		connection_thread = (

@@ -80,7 +80,7 @@ class Node:
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
-		self.update_timetable()
+		self.update_timetable(received_timetable, received_nodeID)
 
 		#Write new log to file
 		self.update_log()
@@ -100,12 +100,12 @@ class Node:
 					break
 		self.log.truncateLog(updated_log)
 
-	def update_timetable(self, received_timetable):
+	def update_timetable(self, received_timetable, received_nodeID):
 		for i in range(len(self.timeTable[0])): 
-			self.timeTable[self.nodeID][i] = max(self.timeTable[self.nodeID][i], received_timetable[received_nodeID][i])
+			self.timeTable[self.nodeID-1][i] = max(self.timeTable[self.nodeID-1][i], received_timetable[received_nodeID-1][i])
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
-        
+		
 
 	def send(self, to_nodeId):
 		"""
@@ -241,7 +241,8 @@ if __name__ == '__main__':
 	node.displayCalendar()
 	print(node.timeTable)
 
-	node.send(3)
+	for n in node.messenger.otherNodes:
+		node.send(n)
 
 	try:
 		read_file = open('incoming2.pkl', 'rb')
