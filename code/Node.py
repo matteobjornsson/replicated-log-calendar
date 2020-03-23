@@ -33,7 +33,7 @@ class Node:
 
 	## message proccessing: 
 
-	def receive(self, received_NP_log, received_timetable):
+	def receive(self, received_NP_log, received_timetable, received_nodeID):
 		"""
 		process incoming messages. Update the timeTable and calendar accordingly. 
 		options:  add appointment
@@ -42,14 +42,10 @@ class Node:
 		addEventToLog()
 		"""
 		# TODO: who is sender for TT update?
-		received_nodeID = 0
 		new_events = []
-
-		print("received timetable through socket \n")
-		print(received_timetable)
-		print("\n")
-
+		print("current log: ", self.log.log)
 		for eventRecordFromNP in received_NP_log:
+			print(eventRecordFromNP)
 			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
 				new_events.append(eventRecordFromNP)
 
@@ -121,7 +117,7 @@ class Node:
 		message to be sent
 		"""
 		NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
-		message = (NP, self.timeTable)
+		message = (NP, self.timeTable, self.nodeID)
 		self.messenger.send(to_nodeId, message)
 		# send a message to other nodes when a change is made to the log
 		# or as required to resolve conflicts. 
@@ -148,7 +144,7 @@ class Node:
 		while True:
 			if not self.messenger.message_queue == []:
 				message = self.messenger.message_queue.pop(0)
-				self.receive(message[0], message[1])
+				self.receive(message[0], message[1], message[2])
 
 
 ## User interaction logic: 
@@ -249,9 +245,12 @@ if __name__ == '__main__':
 	userChoice = input("Pick and appointment, 1-7")
 	node.addCalendarAppointment(choices[int(userChoice)])
 
+	for n in node.messenger.otherNodes:
+		node.send(n)
+
 	userChoice = input("Pick and appointment, 1-7")
 	node.addCalendarAppointment(choices[int(userChoice)])
-	
+
 	#node.addCalendarAppointment(dmvAppointment)
 	#node.addCalendarAppointment(skiingAppointment)
 	# node.addCalendarAppointment()
