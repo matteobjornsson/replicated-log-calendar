@@ -85,7 +85,7 @@ class Calendar:
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
             if existing_date[0] == incoming_date[0]:
-                print("existing:", exisiting_date)
+                print("existing:", existing_date)
                 print("incoming:", incoming_date)
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
