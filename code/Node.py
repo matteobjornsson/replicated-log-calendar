@@ -242,28 +242,19 @@ if __name__ == '__main__':
 	choices[6] = ("Studying", 5, 22.0, 23.0, [3] )
 	choices[7] = ("Church", 6, 10.0, 12.5, [2,4])
 
-	userChoice = input("Pick and appointment, 1-7")
-	node.addCalendarAppointment(choices[int(userChoice)])
+	while True:
+		userChoice = input("Pick and appointment, 1-7")
+		if int(userChoice)==0:
+			node.deleteCalendarAppointment()
+		else:
+			node.addCalendarAppointment(choices[int(userChoice)])
 
-	for n in node.messenger.otherNodes:
-		node.send(n)
+		for n in node.messenger.otherNodes:
+			node.send(n)
 
-	userChoice = input("Pick and appointment, 1-7")
-	node.addCalendarAppointment(choices[int(userChoice)])
-
-	#node.addCalendarAppointment(dmvAppointment)
-	#node.addCalendarAppointment(skiingAppointment)
-	# node.addCalendarAppointment()
-	#node.displayCalendar()
-	#node.deleteCalendarAppointment()
-	#node.displayCalendar()
-	#node.addCalendarAppointment(otherAppointment)
-	node.displayCalendar()
-	#print(node.timeTable)
+		node.displayCalendar()
 
 
-	for n in node.messenger.otherNodes:
-		node.send(n)
 
 	"""
 	try:
