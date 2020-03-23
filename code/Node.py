@@ -56,7 +56,10 @@ class Node:
 				Check for conflicts
 				"""
 				try:
-					self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
+					####################
+					#TODO: change this back to override=False once we can start checking conflict resolution
+					###############
+					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Check for conflict resolution
 				except ValueError:
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if received_nodeID > self.nodeID:   
