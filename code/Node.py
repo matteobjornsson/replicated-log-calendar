@@ -244,10 +244,11 @@ if __name__ == '__main__':
 	choices[7] = ("Church", 6, 10.0, 12.5, [2,4])
 
 	userChoice = input("Pick and appointment, 1-7")
-
-
-
 	node.addCalendarAppointment(choices[int(userChoice)])
+
+	userChoice = input("Pick and appointment, 1-7")
+	node.addCalendarAppointment(choices[int(userChoice)])
+	
 	#node.addCalendarAppointment(dmvAppointment)
 	#node.addCalendarAppointment(skiingAppointment)
 	# node.addCalendarAppointment()
