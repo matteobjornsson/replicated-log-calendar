@@ -12,13 +12,13 @@ class Node:
 
 ## constructor: 
 
-	def __init__(self, N: int, i: int):
+	def __init__(self, N: int, i: int, local: int):
 		self.lamportTime = 0
 		self.timeTable = numpy.zeros((N,N))
 		self.nodeID = i
 		self.log = Log.Log(self.nodeID) 
 		self.calendar = Calendar.Calendar(self.nodeID) 
-		self.messenger = Messenger.Messenger(i)
+		self.messenger = Messenger.Messenger(i, local)
 
 		# listen for incoming messages on messege queue, pop and recieve
 		receive_msg_thread = threading.Thread(
@@ -217,9 +217,10 @@ class Node:
 if __name__ == '__main__':
 	parser =  argparse.ArgumentParser(description='Node instance')
 	parser.add_argument('nodeID', help='NodeID.', type=int)
+	parser.add_argument('local', help='local or not', type=int)
 	args = parser.parse_args()
 
-	node = Node(4, args.nodeID)
+	node = Node(4, args.nodeID, args.local)
 	doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
 	dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
 	skiingAppointment = ("Skiing", 3, 6.0, 17.0, [3])
