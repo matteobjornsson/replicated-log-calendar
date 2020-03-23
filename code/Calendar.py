@@ -53,19 +53,27 @@ class Calendar:
         incoming_appt_date = (appointment[1], appointment[2], appointment[3])
 
         #If override == False, i.e., the incoming appt needs to be checked for conflicts 
-        #   because the current node is part of the attendees, 
         #   iterate over all existing appointments in current calendar
         if not override:
             # TODO: I think we need to change this logic so that check date conflict
             # automatically checks all in log given incoming date, returns boolean. 
-            if self.check_date_conflict(incoming_appt_date):
-                raise CalendarConflictError("Conflicting appointments occurred")
+            if self.check_participants_overlap(appointment[4]):
+                if self.check_date_conflict(incoming_appt_date):
+                    raise CalendarConflictError("Conflicting appointments occurred")
                        
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
         else:
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
+    
+    def check_participants_overlap(self, incoming_participants):
+        for appt_name, appt in self.appointments.items():
+            existing_participants = appt[4]
+            if not set(existing_participants).isdisjoint(incoming_participants)
+                return True
+            else:
+                return False
         
     def check_date_conflict(self, incoming_date):
         """

@@ -56,21 +56,19 @@ class Node:
 				#if received_nodeID == 0:
 				#    received_nodeID = eventRecordFromNP.nodeID
 				"""
-				Check if current node is participant in event, if yes: there may be conflicts!
-				If not, you can simply insert the event.
+				Check for conflicts
 				"""
-				if self.nodeID in eventRecordFromNP.appointment[4]:
-					try:
-						self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
-					except ValueError:
-						#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
-						if received_nodeID > self.nodeID:   
-							self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
-							insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
-						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
-						else: 
-							print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
-							#SEND DELETE TO NODES
+				try:
+					self.calendar.insertAppointment(eventRecordFromNP.appointment) #Check for conflict resolution
+				except ValueError:
+					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
+					if received_nodeID > self.nodeID:   
+						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
+						insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
+					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
+					else: 
+						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
+						#SEND DELETE TO NODES
 				else:
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 					insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
@@ -96,7 +94,7 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j):
 					updated_log.append(er)
-					print("at node", j)
+#					print("at node", j)
 					break
 		self.log.truncateLog(updated_log)
 
@@ -106,6 +104,7 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
 		
+		print(self.timeTable)
 
 	def send(self, to_nodeId):
 		"""
@@ -172,12 +171,7 @@ class Node:
 		try:
 			self.calendar.insertAppointment(appointment)
 		except ValueError:
-			print("Appointment already exists.")
-			confirm_update = input(
-				"Would you like to override the existing appointment? (y/n)"
-				)
-			if confirm_update == "y":
-				self.calendar.insertAppointment(appointment, override = True)
+			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")
 		print("\"{}\" added to calendar.".format(appointment[0]))
 
 
@@ -235,15 +229,17 @@ if __name__ == '__main__':
 	node.addCalendarAppointment(skiingAppointment)
 	# node.addCalendarAppointment()
 	node.displayCalendar()
-	node.deleteCalendarAppointment()
-	node.displayCalendar()
+	#node.deleteCalendarAppointment()
+	#node.displayCalendar()
 	node.addCalendarAppointment(otherAppointment)
 	node.displayCalendar()
-	print(node.timeTable)
+	#print(node.timeTable)
+
 
 	for n in node.messenger.otherNodes:
 		node.send(n)
 
+	"""
 	try:
 		read_file = open('incoming2.pkl', 'rb')
 		incomingMessage = pickle.load(read_file)
@@ -256,7 +252,7 @@ if __name__ == '__main__':
 	node.receive(incomingNPLog, incomingNPTimeTable)
 	node.displayCalendar()
 	print(node.timeTable)
-
+	"""
 
 	
 	
