@@ -44,9 +44,12 @@ class Node:
 		# TODO: who is sender for TT update?
 		received_nodeID = 0
 		new_events = []
-		print("current log: ", self.log.log)
+
+		print("received timetable through socket \n")
+		print(received_timetable)
+		print("\n")
+
 		for eventRecordFromNP in received_NP_log:
-			print(eventRecordFromNP)
 			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
 				new_events.append(eventRecordFromNP)
 
