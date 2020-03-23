@@ -80,7 +80,7 @@ class Node:
 		self.update_timetable(received_timetable, received_nodeID)
 		
 		print('and the updated calendar: ')
-		self.calendar.displayCalendar()
+		self.displayCalendar()
 
 		#Write new log to file
 		self.update_log(new_events)
