@@ -100,6 +100,8 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j+1):
 					updated_log.append(er)
+					print("appended event record to updated log: \n")
+					er.printEventRecord()
 					break
 		self.log.truncateLog(updated_log)
 
