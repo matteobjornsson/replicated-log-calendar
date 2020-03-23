@@ -43,18 +43,15 @@ class Node:
 		"""
 		# TODO: who is sender for TT update?
 		received_nodeID = 0
-		delete_events = {}
-		insert_events = {}
+		new_events = []
 		for eventRecordFromNP in received_NP_log:
 			if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
-				self.log.insert(eventRecordFromNP) #self.log.insert(eventRecordFromNP)
+				new_events.append(eventRecordFromNP)
 
 			#Create list of new eventrecords to update log later
 			# (if time of incoming event time is newer (greater than) our 
 			# TimeTable record of that node time append record to our log)
 			if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
-				#if received_nodeID == 0:
-				#    received_nodeID = eventRecordFromNP.nodeID
 				"""
 				Check for conflicts
 				"""
@@ -64,14 +61,12 @@ class Node:
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if received_nodeID > self.nodeID:   
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
-						insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
 					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 					else: 
 						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
 						#SEND DELETE TO NODES
 				else:
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
-					insert_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
 				self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				delete_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
@@ -81,16 +76,17 @@ class Node:
 		self.update_timetable(received_timetable, received_nodeID)
 
 		#Write new log to file
-		self.update_log()
+		self.update_log(new_events)
 
-	def update_log(self):
+	def update_log(self, new_events):
 		"""
 		Only keep relevant events based on timetable entrances 
 		and write the collected relevant events to file.
 		Effectively, this is the truncate log event.
 		"""
+		new_events.extend(self.log.log)
 		updated_log = []
-		for er in (self.log.log):
+		for er in new_events:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j):
 					updated_log.append(er)
