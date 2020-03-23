@@ -45,7 +45,7 @@ class Node:
 		received_nodeID = 0
 		new_events = []
 		for eventRecordFromNP in received_NP_log:
-			if not self.hasRec(eventRecordFromNP, self.nodeID):  #Create list of new eventrecords to update log later
+			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
 				new_events.append(eventRecordFromNP)
 
 			#Create list of new eventrecords to update log later
@@ -94,8 +94,7 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j):
 					updated_log.append(er)
-#					print("at node", j)
-#					break
+					break
 		self.log.truncateLog(updated_log)
 
 	def update_timetable(self, received_timetable, received_nodeID):
