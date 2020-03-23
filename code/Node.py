@@ -78,6 +78,9 @@ class Node:
 		#Update timetable
 		print("\nReceived message, here is the updated time table:")
 		self.update_timetable(received_timetable, received_nodeID)
+		
+		print('and the updated calendar: ')
+		self.displayCalendar()
 
 		#Write new log to file
 		self.update_log(new_events)

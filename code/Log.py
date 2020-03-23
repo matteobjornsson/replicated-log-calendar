@@ -49,11 +49,11 @@ class Log:
 
     def insert(self, eR: EventRecord):
         self.log.append(eR)
-        """
-        with open('../files/logOutput.tsv', 'a') as out_file:
+
+        with open(self.file_path, 'a') as out_file:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
-        """
+
     def truncateLog(self, eventRecords):
         # if all nodes know of an eventRecord, delete it from the local log
         # do that 
