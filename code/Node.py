@@ -104,7 +104,10 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
 		
+		#print statements for debugging
+		print('\n')
 		print(self.timeTable)
+		print('\n')
 
 	def send(self, to_nodeId):
 		"""
@@ -173,6 +176,11 @@ class Node:
 		except ValueError:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")
 		print("\"{}\" added to calendar.".format(appointment[0]))
+		
+		#print statements for debugging
+		print('\n')
+		print(self.timeTable)
+		print('\n')
 
 
 	def deleteCalendarAppointment(self):
