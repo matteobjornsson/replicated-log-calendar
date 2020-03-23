@@ -71,6 +71,17 @@ class Log:
         print("read in record: ", new_record.printEventRecord())
         return new_record
 
+    def printLogFromLogfile(self):
+        with open(self.file_path, 'r') as read_file:
+            csv_reader = csv.reader(read_file, delimiter='\t')
+            next(csv_reader)
+            for line in csv_reader:
+                print(line)
+
+    def printLog(self):
+        print([x.stringRepresentation for x in self.log])
+
+
 if __name__ == '__main__':
     log = Log()
     event = ("Doctor Appt", 3, 10.0, 11.5, [1,2])

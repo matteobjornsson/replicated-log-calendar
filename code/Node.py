@@ -43,7 +43,8 @@ class Node:
 		"""
 		# TODO: who is sender for TT update?
 		new_events = []
-		print("current log: ", self.log.log)
+		print("current log: ")
+		self.log.printLog()
 		for eventRecordFromNP in received_NP_log:
 			print(eventRecordFromNP)
 			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
@@ -84,6 +85,8 @@ class Node:
 
 		#Write new log to file
 		self.update_log(new_events)
+
+		self.log.printLog()
 
 	def update_log(self, new_events):
 		"""
