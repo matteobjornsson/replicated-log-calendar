@@ -78,6 +78,7 @@ class Node:
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
+		print("\nReceived message, here is the updated time table:")
 		self.update_timetable(received_timetable, received_nodeID)
 
 		#Write new log to file
@@ -178,7 +179,7 @@ class Node:
 		print("\"{}\" added to calendar.".format(appointment[0]))
 		
 		#print statements for debugging
-		print('\n')
+		print('\nUpdated time table from insert event: \n')
 		print(self.timeTable)
 		print('\n')
 
