@@ -68,6 +68,19 @@ class EventRecord:
         print(self.stringRepresentation)
     
     def __eq__(self, other):
+        if other.operation == self.operation:
+            if other.operation == "Insert":
+                if self.lamportTime == other.lamportTime and self.nodeID == other.nodeID and self.appointment[0] == other.appointment[0]:
+                    return True
+                else:
+                    return False
+            else:
+                if self.appointment[0] == other.appointment[0]:
+                    return True
+                else:
+                    return False
+
+        """
         if other.operation == "Insert" and self.operation == "Insert":
             if self.lamportTime == other.lamportTime and self.nodeID == other.nodeID and self.appointment[0] == other.appointment[0]:
                 return True
@@ -79,6 +92,7 @@ class EventRecord:
                 return True
             else:
                 return False
+        """
         
 
 
