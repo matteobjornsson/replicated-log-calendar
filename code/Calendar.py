@@ -105,8 +105,12 @@ class Calendar:
                 return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
-        del self.appointments[appointmentName]
-        self.updateCalendarFile()
+        try:
+            del self.appointments[appointmentName]
+            self.updateCalendarFile()
+        except KeyError:
+            print("Appointment does not exist in calendar.")
+
         # TODO: check for existing delete
 
     def updateCalendarFile(self) -> None:
