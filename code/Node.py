@@ -221,18 +221,28 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	node = Node(4, args.nodeID, args.local, True)
-	doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
-	dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
-	skiingAppointment = ("Skiing", 3, 6.0, 17.0, [3])
-	otherAppointment = ("Other", 7, 1.0, 3.0, [1])
-	node.addCalendarAppointment(doctorAppointment)
-	node.addCalendarAppointment(dmvAppointment)
-	node.addCalendarAppointment(skiingAppointment)
+
+	choices = {}
+	choices[1] = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
+	choices[2] = ("DMV", 4, 12.5, 13.5, [1,2])
+	choices[3] = ("Skiing", 3, 6.0, 17.0, [3])
+	choices[4] = ("Other", 7, 1.0, 3.0, [1])
+	choices[5] = ("Dogwalking", 1, 3.0, 20.0, [1,2,3,4])
+	choices[6] = ("Studying", 5, 22.0, 23.0, [3] )
+	choices[7] = ("Church", 6, 10.0, 12.5, [2,4])
+
+	userChoice = input("Pick and appointment, 1-7")
+
+
+
+	node.addCalendarAppointment(choices[int(userChoice)])
+	#node.addCalendarAppointment(dmvAppointment)
+	#node.addCalendarAppointment(skiingAppointment)
 	# node.addCalendarAppointment()
-	node.displayCalendar()
+	#node.displayCalendar()
 	#node.deleteCalendarAppointment()
 	#node.displayCalendar()
-	node.addCalendarAppointment(otherAppointment)
+	#node.addCalendarAppointment(otherAppointment)
 	node.displayCalendar()
 	#print(node.timeTable)
 
