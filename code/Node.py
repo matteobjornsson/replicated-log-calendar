@@ -12,12 +12,12 @@ class Node:
 
 ## constructor: 
 
-	def __init__(self, N: int, i: int, local: int):
+	def __init__(self, N: int, i: int, local: int, freshBoot = True):
 		self.lamportTime = 0
 		self.timeTable = numpy.zeros((N,N))
 		self.nodeID = i
-		self.log = Log.Log(self.nodeID) 
-		self.calendar = Calendar.Calendar(self.nodeID) 
+		self.log = Log.Log(self.nodeID, freshBoot) 
+		self.calendar = Calendar.Calendar(self.nodeID, freshBoot) 
 		self.messenger = Messenger.Messenger(i, local)
 
 		# listen for incoming messages on messege queue, pop and recieve
@@ -220,7 +220,7 @@ if __name__ == '__main__':
 	parser.add_argument('local', help='local or not', type=int)
 	args = parser.parse_args()
 
-	node = Node(4, args.nodeID, args.local)
+	node = Node(4, args.nodeID, args.local, True)
 	doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
 	dmvAppointment = ("DMV", 4, 12.5, 13.5, [1,2])
 	skiingAppointment = ("Skiing", 3, 6.0, 17.0, [3])
