@@ -95,7 +95,7 @@ class Node:
 				if not self.hasRec(er, j):
 					updated_log.append(er)
 #					print("at node", j)
-#					break
+					break
 		self.log.truncateLog(updated_log)
 
 	def update_timetable(self, received_timetable, received_nodeID):
