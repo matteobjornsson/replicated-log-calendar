@@ -7,12 +7,15 @@ class Messenger:
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
+
+	localNodes =[(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
+			 (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
 	
 
 ######## Constructor ###### 
 	file_path = '../files/nodeAddresses.tsv'
 
-	def __init__(self, nodeSelf: int):
+	def __init__(self, nodeSelf: int, local: int):
 		'''
 		Constructor for the Messenger Class
 
@@ -23,7 +26,10 @@ class Messenger:
 		'''
 
 		self.nodeID = nodeSelf
-		self.nodes = self.read_in_node_addresses()
+		if (local == 1):
+			self.nodes = self.localNodes
+		else: 
+			self.nodes = self.read_in_node_addresses()
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
 		
 
@@ -192,7 +198,8 @@ class Messenger:
 if __name__ == '__main__':
 	parser =  argparse.ArgumentParser(description='Messenger Utility')
 	parser.add_argument('nodeID', help='NodeID.', type=int)
+	parser.add_argument('local', help='local or not', type=int)
 	args = parser.parse_args()
 
-	messenger = Messenger(args.nodeID)
+	messenger = Messenger(args.nodeID, args.local)
 	#messenger.test()
