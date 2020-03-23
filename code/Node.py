@@ -73,7 +73,6 @@ class Node:
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
 				self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
-				delete_events[eventRecordFromNP.appointment[0]] = eventRecordFromNP
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
