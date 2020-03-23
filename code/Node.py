@@ -16,8 +16,8 @@ class Node:
 		self.lamportTime = 0
 		self.timeTable = numpy.zeros((N,N))
 		self.nodeID = i
-		self.log = Log.Log() 
-		self.calendar = Calendar.Calendar() 
+		self.log = Log.Log(self.nodeID) 
+		self.calendar = Calendar.Calendar(self.nodeID) 
 		self.messenger = Messenger.Messenger(i)
 
 		# listen for incoming messages on messege queue, pop and recieve

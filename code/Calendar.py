@@ -23,13 +23,15 @@ class Calendar:
     '''
     calendarFile = None
 
-    def __init__(self, appointments = {}):
+    def __init__(self, nodeID, appointments = {}):
         #self.appointments = {}
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
         #file_path = '../files/logOutput.tsv'
+        filename = "calendar" + str(nodeID) + ".pkl"
+        self.file_path = '../files/' + filename
         try:
-            read_file = open('../files/calendar.pkl', 'rb')
+            read_file = open(self.file_path, 'rb')
             self.appointments = pickle.load(read_file)
             read_file.close()
         except FileNotFoundError:
@@ -103,7 +105,7 @@ class Calendar:
         # TODO: check for existing delete
 
     def updateCalendarFile(self) -> None:
-        calendarFile = open('../files/calendar.pkl', 'wb')
+        calendarFile = open(self.file_path, 'wb')
         pickle.dump(self.appointments, calendarFile)
         calendarFile.close()
 

@@ -27,8 +27,9 @@ class Log:
         self.log = log
         self.logfile = logfile
         if not os.path.isdir('../files'):
-            os.mkdir('../files')  
-        self.file_path = '../files/logOutput.tsv'
+            os.mkdir('../files') 
+        filename "logOutput" + str(nodeID) + ".tsv" 
+        self.file_path = '../files/' + filename
 
         try:
             with open(self.file_path, 'r') as read_file:
