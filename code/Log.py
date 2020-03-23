@@ -23,12 +23,12 @@ Where Calendar tuple is structured as follows:
 class Log:
     header = ["TIME","NODE ID", "OPERATION", "APPOINTMENT NAME", "DAY", "START", "END", "PARTICIPANTS"]
 
-    def __init__(self, log = [], logfile = ""):
+    def __init__(self, nodeID, log = [], logfile = ""):
         self.log = log
         self.logfile = logfile
         if not os.path.isdir('../files'):
             os.mkdir('../files') 
-        filename "logOutput" + str(nodeID) + ".tsv" 
+        filename = "logOutput" + str(nodeID) + ".tsv" 
         self.file_path = '../files/' + filename
 
         try:

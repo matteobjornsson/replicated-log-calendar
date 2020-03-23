@@ -4,7 +4,7 @@ import argparse, pickle
 parser =  argparse.ArgumentParser(description='Node instance')
 parser.add_argument('nodeID', help='NodeID.', type=int)
 args = parser.parse_args()
-node = Node.Node(4, args.nodeID)
+node = Node.Node(4, args.nodeID, 1)
 """
 try:
     read_file = open('incoming2.pkl', 'rb')

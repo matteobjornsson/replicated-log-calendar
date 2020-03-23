@@ -72,7 +72,7 @@ class Calendar:
     def check_participants_overlap(self, incoming_participants):
         for appt_name, appt in self.appointments.items():
             existing_participants = appt[4]
-            if not set(existing_participants).isdisjoint(incoming_participants)
+            if not set(existing_participants).isdisjoint(incoming_participants):
                 return True
             else:
                 return False
