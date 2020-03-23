@@ -85,14 +85,19 @@ class Calendar:
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
             if existing_date[0] == incoming_date[0]:
+                print("existing:", exisiting_date)
+                print("incoming:", incoming_date)
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
+                    print("starts at same time")
                     return True
                 #Check if it ends at the same time
                 elif existing_date[2] == incoming_date[2]:
+                    print("ends at same time")
                     return True
                 #Check if there is overlap in start/end time
                 elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
+                    print("there is overlap")
                     return True
                 else:
                     return False
