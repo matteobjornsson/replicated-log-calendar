@@ -43,7 +43,7 @@ class Node:
 		"""
 		# TODO: who is sender for TT update?
 		new_events = []
-		print("current log: ")
+		print("\n Log at beginning of receive: ")
 		self.log.printLog()
 		for eventRecordFromNP in received_NP_log:
 			print(eventRecordFromNP)
@@ -86,6 +86,7 @@ class Node:
 		#Write new log to file
 		self.update_log(new_events)
 
+		print("\nLog at end of receive: ")
 		self.log.printLog()
 
 	def update_log(self, new_events):
