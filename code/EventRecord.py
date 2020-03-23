@@ -66,6 +66,13 @@ class EventRecord:
         method to print out an event record. 
         """
         print(self.stringRepresentation)
+    
+    def __eq__(self, other):
+        if self.operation == other.operation and self.lamportTime == other.lamportTime and self.nodeID = other.nodeID and self.appointment[0] == other.appointment[0]:
+            return True
+        else:
+            return False
+
 
 
 if __name__ == '__main__':
