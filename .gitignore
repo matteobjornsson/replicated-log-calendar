@@ -1,5 +1,2 @@
 **/__pycache__
-*.pickle
-files/logOutput.tsv
-files/*.tsv
-files/*.pkl
+files/
