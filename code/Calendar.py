@@ -57,8 +57,20 @@ class Calendar:
         #If override == False, i.e., the incoming appt needs to be checked for conflicts 
         #   iterate over all existing appointments in current calendar
         if not override:
-            if self.check_participants_overlap(appointment[4]) and self.check_date_conflict(incoming_appt_date):
-                raise CalendarConflictError("Conflicting appointments occurred")
+            print("override = false")
+            if self.check_participants_overlap(appointment[4]):
+                print("participant overlap occurred")
+                if self.check_date_conflict(incoming_appt_date):
+                    print("date conflict occurred")
+                    raise CalendarConflictError("Conflicting appointments occurred")
+                else:
+                    print("no date overlap")
+                    self.appointments[appointment[0]] = appointment
+                    self.updateCalendarFile()
+            else:
+                print("no participant overlap")
+                self.appointments[appointment[0]] = appointment
+                self.updateCalendarFile()
                     
         elif override:
             self.appointments[appointment[0]] = appointment
