@@ -88,6 +88,8 @@ class Node:
 
 		print("\nLog at end of receive: ")
 		self.log.printLog()
+		
+		self.displayCalendar()
 
 	def update_log(self, new_events):
 		"""
