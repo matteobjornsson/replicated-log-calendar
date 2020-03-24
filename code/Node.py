@@ -77,11 +77,11 @@ class Node:
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
-		print("\nReceived message, here is the updated time table:")
+		#print("\nReceived message, here is the updated time table:")
 		self.update_timetable(received_timetable, received_nodeID)
 		
-		print('and the updated calendar: ')
-		self.displayCalendar()
+		#print('and the updated calendar: ')
+		#self.displayCalendar()
 
 		#Write new log to file
 		self.update_log(new_events)
@@ -107,11 +107,6 @@ class Node:
 		self.log.truncateLog(updated_log)
 
 	def update_timetable(self, received_timetable, received_nodeID):
-		
-		print('Before: \n')
-		print(self.timeTable)
-		print('\n')
-		 
 		for i in range(len(self.timeTable[0])): 
 			self.timeTable[self.nodeID-1][i] = max(self.timeTable[self.nodeID-1][i], received_timetable[received_nodeID-1][i])
 		
@@ -119,10 +114,6 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
 		
-		#print statements for debugging
-		print('After: \n')
-		print(self.timeTable)
-		print('\n')
 
 	def send(self, to_nodeId):
 		"""
@@ -193,9 +184,9 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		#print statements for debugging
-		print('\nUpdated time table from insert event: \n')
-		print(self.timeTable)
-		print('\n')
+		#print('\nUpdated time table from insert event: \n')
+		#print(self.timeTable)
+		#print('\n')
 
 
 	def deleteCalendarAppointment(self):

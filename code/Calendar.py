@@ -57,8 +57,20 @@ class Calendar:
         #If override == False, i.e., the incoming appt needs to be checked for conflicts 
         #   iterate over all existing appointments in current calendar
         if not override:
-            if self.check_participants_overlap(appointment[4]) and self.check_date_conflict(incoming_appt_date):
-                raise CalendarConflictError("Conflicting appointments occurred")
+            print("override = false")
+            if self.check_participants_overlap(appointment[4]):
+                print("participant overlap occurred")
+                if self.check_date_conflict(incoming_appt_date):
+                    print("date conflict occurred")
+                    raise CalendarConflictError("Conflicting appointments occurred")
+                else:
+                    print("no date overlap")
+                    self.appointments[appointment[0]] = appointment
+                    self.updateCalendarFile()
+            else:
+                print("no participant overlap")
+                self.appointments[appointment[0]] = appointment
+                self.updateCalendarFile()
                     
         elif override:
             self.appointments[appointment[0]] = appointment
@@ -80,11 +92,13 @@ class Calendar:
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
         """
         #Check if event is on the same day
+
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
+            print("existing:", existing_date)
+            print("incoming:", incoming_date)
             if existing_date[0] == incoming_date[0]:
-                print("existing:", existing_date)
-                print("incoming:", incoming_date)
+                print("same day")
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
                     print("starts at same time")
@@ -97,10 +111,8 @@ class Calendar:
                 elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
                     print("there is overlap")
                     return True
-                else:
-                    return False
-            else:
-                return False
+        print("looked at all appointments")
+        return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
         try:
