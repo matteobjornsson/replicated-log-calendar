@@ -178,16 +178,16 @@ class Node:
 					separated by commas (e.g. 1, 3, 4): \n\n")
 			
 			appointment = (name, day, start_time, end_time, participants)
-		
-		lamportTime = self.clock()
-		self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
-		eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
-		self.log.insert(eR)
 		try:
 			self.calendar.insertAppointment(appointment)
-		except ValueError:
-			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")
+			lamportTime = self.clock()
+			self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
+			eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
+			self.log.insert(eR)
+
 		print("\"{}\" added to calendar.".format(appointment[0]))
+		except ValueError:
+			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		#print statements for debugging
 		print('\nUpdated time table from insert event: \n')
