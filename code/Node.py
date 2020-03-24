@@ -54,6 +54,7 @@ class Node:
 			#Create list of new eventrecords to update log later
 			# (if time of incoming event time is newer (greater than) our 
 			# TimeTable record of that node time append record to our log)
+
 			if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
 				"""
 				Check for conflicts
@@ -77,7 +78,10 @@ class Node:
 				#else:
 				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
-				self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
+				try:
+					self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete")
+				except ValueError:
+					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
@@ -200,6 +204,7 @@ class Node:
 
 
 	def deleteCalendarAppointment(self, appointmentName = None):
+
 		if appointmentName == None:
 			appointmentName = input(
 				"Enter the exact text of the appointment name you wish to delete: "
