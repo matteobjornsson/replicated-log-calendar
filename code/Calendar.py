@@ -82,7 +82,13 @@ class Calendar:
         """
         for appt_name, appt in self.appointments.items():
             existing_participants = appt[4]
-            if not set(existing_participants).isdisjoint(set(incoming_participants)):
+            print("existing: ", set(existing_participants))
+            print("incoming: ", set(incoming_participants))
+            if existing_participants == incoming_participants:
+                print("exact same participants")
+                return True
+            elif not set(existing_participants).isdisjoint(set(incoming_participants)):
+                print("overlapping participants")
                 return True
 
         return False
@@ -95,23 +101,16 @@ class Calendar:
 
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
-            print("existing:", existing_date)
-            print("incoming:", incoming_date)
             if existing_date[0] == incoming_date[0]:
-                print("same day")
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
-                    print("starts at same time")
                     return True
                 #Check if it ends at the same time
                 elif existing_date[2] == incoming_date[2]:
-                    print("ends at same time")
                     return True
                 #Check if there is overlap in start/end time
                 elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
-                    print("there is overlap")
                     return True
-        print("looked at all appointments")
         return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
