@@ -185,7 +185,7 @@ class Node:
 			eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
 			self.log.insert(eR)
 
-		print("\"{}\" added to calendar.".format(appointment[0]))
+			print("\"{}\" added to calendar.".format(appointment[0]))
 		except ValueError:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
