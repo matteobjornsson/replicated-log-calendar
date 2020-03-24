@@ -7,6 +7,7 @@ import Messenger
 import pickle
 import argparse
 import threading
+from time import sleep
 
 class Node:
 
@@ -60,9 +61,11 @@ class Node:
 				try:
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
 				except ValueError:
+					print("conflict resolution triggered")
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if received_nodeID > self.nodeID:   
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt
+						print("incoming conflicting appt takes precedence, overrides local conflict")
 					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 					else: 
 						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
@@ -258,8 +261,11 @@ if __name__ == '__main__':
 		else:
 			node.addCalendarAppointment(choices[int(userChoice)])
 
+		sleep(5)
+
 		for n in node.messenger.otherNodes:
 			node.send(n)
+
 
 		node.displayCalendar()
 
