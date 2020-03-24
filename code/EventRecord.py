@@ -51,7 +51,8 @@ class EventRecord:
             str(appointment[4])  # PARTICIPANTS 
         ]
         self.stringRepresentation = (
-            str(lamportTime) + '\t'         # TIME 
+            
+              str(lamportTime) + '\t'       # TIME 
             + str(nodeID) + '\t'            # NODEID
             + operation + '\t'              # OPERATION
             + appointment[0] + '\t'         # APPOINTMENTNAME

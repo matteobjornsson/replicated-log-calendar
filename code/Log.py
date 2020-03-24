@@ -79,7 +79,9 @@ class Log:
                 print(line)
 
     def printLog(self):
-        print([x.stringRepresentation for x in self.log])
+        print("TIME\tNODEID\tOP\tNAME\tDAY\tSTART\tEND\tPARTICIPANTS")
+        for x in self.log:
+            print(x.stringRepresentation)
 
 
 if __name__ == '__main__':
