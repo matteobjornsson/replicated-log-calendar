@@ -41,7 +41,7 @@ class Node:
 		add any appointments to the log by passing an eventRecord object to 
 		addEventToLog()
 		"""
-		# TODO: who is sender for TT update?
+
 		new_events = []
 		print("\n Log at beginning of receive: ")
 		self.log.printLog()
@@ -58,14 +58,11 @@ class Node:
 				Check for conflicts
 				"""
 				try:
-					####################
-					#TODO: change this back to override=False once we can start checking conflict resolution
-					###############
-					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Check for conflict resolution
+					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
 				except ValueError:
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if received_nodeID > self.nodeID:   
-						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt, TODO: not doing anything with log eventrecords!
+						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt
 					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 					else: 
 						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")

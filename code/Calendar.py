@@ -57,8 +57,6 @@ class Calendar:
         #If override == False, i.e., the incoming appt needs to be checked for conflicts 
         #   iterate over all existing appointments in current calendar
         if not override:
-            # TODO: I think we need to change this logic so that check date conflict
-            # automatically checks all in log given incoming date, returns boolean. 
             if self.check_participants_overlap(appointment[4]):
                 if self.check_date_conflict(incoming_appt_date):
                     raise CalendarConflictError("Conflicting appointments occurred")
