@@ -60,7 +60,7 @@ class Calendar:
             print("override = false")
             if self.check_participants_overlap(appointment[4]):
                 print("participant overlap occurred")
-                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)[0]
+                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
                 if date_overlap_bool:
                     print("date conflict occurred")
                     raise CalendarConflictError("Conflicting appointments occurred")
@@ -75,7 +75,7 @@ class Calendar:
                     
         elif override:
             if self.check_participants_overlap(appointment[4]):
-                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)[0]
+                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
                 if date_overlap_bool:
                     self.appointments[appointment[0]] = appointment
                     self.updateCalendarFile()
@@ -109,14 +109,14 @@ class Calendar:
             if existing_date[0] == incoming_date[0]:
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
-                    return (True, appt_name)
+                    return True, appt_name
                 #Check if it ends at the same time
                 elif existing_date[2] == incoming_date[2]:
-                    return (True, appt_name)
+                    return True, appt_name
                 #Check if there is overlap in start/end time
                 elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
-                    return (True, appt_name)
-        return (False, None)
+                    return True, appt_name
+        return False, None
 
     def deleteAppointment(self, appointmentName: str) -> None:
         try:
