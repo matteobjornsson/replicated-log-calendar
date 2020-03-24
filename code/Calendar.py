@@ -132,7 +132,7 @@ class Calendar:
         #with open('../files/calendar.pickle', 'rb') as calendarFile:
         #    unpickledCalendar = pickle.load(calendarFile)
         print('\nCalendar: ')
-        for appointment in self.appointments:
+        for appointmentName, appointment in self.appointments.items():
             print(appointment)
 
     def contains(self, appointmentName: str) -> bool:
