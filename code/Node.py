@@ -67,8 +67,8 @@ class Node:
 					else: 
 						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
 						#TODO: SEND DELETE TO NODES
-				else:
-					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
+				#else:
+				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
 				self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
