@@ -64,7 +64,7 @@ class Node:
 					print("conflict resolution triggered")
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if received_nodeID > self.nodeID:   
-						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt
+						conflicting_event_name = self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt
 						print("incoming conflicting appt takes precedence, overrides local conflict")
 					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 					else: 
