@@ -88,7 +88,7 @@ class Calendar:
 
     def check_participants_overlap(self, incoming_participants):
         """
-
+        Check if there is overlap in the participants lists of the appointments
         """
         for appt_name, appt in self.appointments.items():
             existing_participants = appt[4]
