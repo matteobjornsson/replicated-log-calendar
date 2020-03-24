@@ -74,13 +74,17 @@ class Calendar:
                 self.updateCalendarFile()
                     
         elif override:
-            if self.check_participants_overlap(appointment[4]):
+            self.appointments[appointment[0]] = appointment
+            self.updateCalendarFile()
+    
+    def get_conflicting_appt_name(self, appointment):
+        if self.check_participants_overlap(appointment[4]):
                 date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
                 if date_overlap_bool:
-                    self.appointments[appointment[0]] = appointment
-                    self.updateCalendarFile()
+                    #self.appointments[appointment[0]] = appointment
+                    #self.updateCalendarFile()
                     return name_of_event
-    
+
     def check_participants_overlap(self, incoming_participants):
         """
 

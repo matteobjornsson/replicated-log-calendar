@@ -63,11 +63,15 @@ class Node:
 				except ValueError:
 					print("conflict resolution triggered")
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
-					if received_nodeID > self.nodeID:   
-						conflicting_event_name = self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True) #Currently overriding calendar appt
+					self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
+					conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
+					conflicting_eR = self.log.get_eventrecord(conflicting_appt_name)
+					if eventRecordFromNP.nodeID > conflicting_eR.nodeID:
 						print("incoming conflicting appt takes precedence, overrides local conflict")
-					#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
+						self.deleteCalendarAppointment(conflicting_appt_name)
+						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 					else: 
+						self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
 						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
 						#TODO: SEND DELETE TO NODES
 				#else:
@@ -195,10 +199,11 @@ class Node:
 		#print('\n')
 
 
-	def deleteCalendarAppointment(self):
-		appointmentName = input(
-			"Enter the exact text of the appointment name you wish to delete: "
-			)
+	def deleteCalendarAppointment(self, appointmentName = None):
+		if appointmentName == None:
+			appointmentName = input(
+				"Enter the exact text of the appointment name you wish to delete: "
+				)
 		if self.calendar.contains(appointmentName):
 			lamportTime = self.clock()
 			self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
