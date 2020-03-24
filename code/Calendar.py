@@ -92,6 +92,7 @@ class Calendar:
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
         """
         #Check if event is on the same day
+
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
             print("existing:", existing_date)
@@ -110,10 +111,8 @@ class Calendar:
                 elif max(0, min(existing_date[2], incoming_date[2]) - max(existing_date[1], incoming_date[1])) > 0:
                     print("there is overlap")
                     return True
-                else:
-                    return False
-            else:
-                return False
+        print("looked at all appointments")
+        return False
 
     def deleteAppointment(self, appointmentName: str) -> None:
         try:
