@@ -107,11 +107,6 @@ class Node:
 		self.log.truncateLog(updated_log)
 
 	def update_timetable(self, received_timetable, received_nodeID):
-		
-		print('Before: \n')
-		print(self.timeTable)
-		print('\n')
-		 
 		for i in range(len(self.timeTable[0])): 
 			self.timeTable[self.nodeID-1][i] = max(self.timeTable[self.nodeID-1][i], received_timetable[received_nodeID-1][i])
 		
@@ -119,10 +114,6 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
 		
-		#print statements for debugging
-		print('After: \n')
-		print(self.timeTable)
-		print('\n')
 
 	def send(self, to_nodeId):
 		"""
