@@ -65,7 +65,7 @@ class Node:
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
 					conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
-					conflicting_eR = self.log.get_eventrecord(conflicting_appt_name)
+					conflicting_eR = self.log.get_eventrecord(conflicting_appt_name, "Insert")
 					if eventRecordFromNP.nodeID > conflicting_eR.nodeID:
 						print("incoming conflicting appt takes precedence, overrides local conflict")
 						self.deleteCalendarAppointment(conflicting_appt_name)
