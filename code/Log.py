@@ -1,6 +1,11 @@
 import csv, ast, os
 import EventRecord
 
+class LogEventError(ValueError):
+    '''Raise error when log eventrecord does not exist'''
+    def __init__(self, message):
+        self.message = message
+
 """
 Log keeps track of all events that have occurred. 
 There are two types of events that can happen in this program:
@@ -53,6 +58,13 @@ class Log:
         with open(self.file_path, 'a') as out_file:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
+    
+    def get_eventrecord(self, er_name):
+            for er in self.log:
+                if er.appointment[0] == er_name and er.operation =="Insert":
+                    return er
+            raise LogEventError
+
 
     def truncateLog(self, eventRecords):
         # if all nodes know of an eventRecord, delete it from the local log
