@@ -94,9 +94,10 @@ class Calendar:
         #Check if event is on the same day
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
+            print("existing:", existing_date)
+            print("incoming:", incoming_date)
             if existing_date[0] == incoming_date[0]:
-                print("existing:", existing_date)
-                print("incoming:", incoming_date)
+                print("same day")
                 #Check if it starts at the same time
                 if existing_date[1] == incoming_date[1]:
                     print("starts at same time")
