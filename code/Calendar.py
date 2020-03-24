@@ -84,8 +84,8 @@ class Calendar:
             existing_participants = appt[4]
             if not set(existing_participants).isdisjoint(set(incoming_participants)):
                 return True
-            else:
-                return False
+
+        return False
         
     def check_date_conflict(self, incoming_date):
         """
