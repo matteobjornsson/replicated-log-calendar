@@ -63,7 +63,7 @@ class Log:
             for er in self.log:
                 if er.appointment[0] == eR_name and er.operation == eR_operation:
                     return er
-            raise LogEventError
+            raise LogEventError("No existing eventrecord with name" + eR_name + " operation " + eR_operation)
 
 
     def truncateLog(self, eventRecords):
