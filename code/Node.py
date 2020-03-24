@@ -238,7 +238,7 @@ if __name__ == '__main__':
 
 	choices = {}
 	choices[1] = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
-	choices[2] = ("DMV", 4, 12.5, 13.5, [1,2])
+	choices[2] = ("DMV", 3, 12.5, 13.5, [1,2,3])
 	choices[3] = ("Skiing", 3, 6.0, 17.0, [3])
 	choices[4] = ("Other", 7, 1.0, 3.0, [1])
 	choices[5] = ("Dogwalking", 1, 3.0, 20.0, [1,2,3,4])
