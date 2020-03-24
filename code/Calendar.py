@@ -78,6 +78,7 @@ class Calendar:
             self.updateCalendarFile()
     
     def get_conflicting_appt_name(self, appointment):
+        incoming_appt_date = (appointment[1], appointment[2], appointment[3])
         if self.check_participants_overlap(appointment[4]):
                 date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
                 if date_overlap_bool:
