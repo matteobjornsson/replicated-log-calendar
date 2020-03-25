@@ -68,7 +68,7 @@ class Node:
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
 						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
 						conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
-						if conflicting_eR == None:
+						if conflicting_eR.operation == "": #if conflicting_eR == None:
 							print("NOTHINGNESS")
 						else:
 							conflicting_eR_nodeID = conflicting_eR.nodeID
