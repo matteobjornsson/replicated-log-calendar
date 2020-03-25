@@ -59,14 +59,17 @@ class Log:
             logWriter = csv.writer(out_file, delimiter='\t')
             logWriter.writerow(eR.iterable)
     
-    def get_eventrecord(self, eR_name, eR_operation):
+    def get_insert_eventrecord(self, eR_name):
         for er in self.log:
-            if er.appointment[0] == eR_name and er.operation == eR_operation:
+            if er.appointment[0] == eR_name and er.operation == "Insert":
                 return er
-            else:
-                return None
-        #raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
-
+        raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
+    
+    def check_delete_eR(self, er_name):
+        for er in self.log:
+            if er.appointment[0] == eR_name and er.operation == "Delete":
+                return True
+        return False
 
     def truncateLog(self, eventRecords):
         # if all nodes know of an eventRecord, delete it from the local log

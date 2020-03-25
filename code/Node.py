@@ -67,7 +67,7 @@ class Node:
 					
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
 					conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
-					conflicting_eR = self.log.get_eventrecord(conflicting_appt_name, "Insert")
+					conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
 					
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 					if eventRecordFromNP.nodeID > conflicting_eR.nodeID:
@@ -82,10 +82,10 @@ class Node:
 				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
 				#try:
-				if self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete") == None:
+				if not self.log.check_delete_eR(eventRecordFromNP.appointment[0]):
 				#except ValueError:
 					# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				#	print("No delete event detected, go ahead and delete.")
+					print("No delete event detected, go ahead and delete.")
 					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				else:
 					print("EventRecord already exists, i.e., appt was already deleted")
