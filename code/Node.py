@@ -73,7 +73,7 @@ class Node:
 						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 						print("incoming conflicting appt takes precedence, overrides local conflict")
 						self.deleteCalendarAppointment(conflicting_appt_name)
-					else: 
+					elif conflicting_eR.nodeID > eventRecordFromNP.nodeID: 
 						self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
 						print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
 						#TODO: SEND DELETE TO NODES
