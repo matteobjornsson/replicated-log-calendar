@@ -204,8 +204,8 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
-		#for n in node.messenger.otherNodes:
-		#	node.send(n)
+		for n in node.messenger.otherNodes:
+			node.send(n)
 
 		#print statements for debugging
 		#print('\nUpdated time table from insert event: \n')
@@ -237,8 +237,8 @@ class Node:
 			print("\"{}\" not in calendar".format(appointmentName))
 
 		# send this update to all other nodes
-		#for n in node.messenger.otherNodes:
-		#	node.send(n)
+		for n in node.messenger.otherNodes:
+			node.send(n)
 
 	def displayCalendar(self): 
 		self.calendar.printCalendar()
@@ -283,10 +283,10 @@ if __name__ == '__main__':
 		else:
 			node.addCalendarAppointment(choices[int(userChoice)])
 
-		sleep(5)
+		sleep(3)
 
-		for n in node.messenger.otherNodes:
-			node.send(n)
+		#for n in node.messenger.otherNodes:
+		#	node.send(n)
 
 		node.displayCalendar()
 
