@@ -81,12 +81,14 @@ class Node:
 				#else:
 				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
 			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
-				try:
-					self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete")
-				except ValueError:
+				#try:
+				if self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete") == None:
+				#except ValueError:
 					# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					print("No delete event detected, go ahead and delete.")
+				#	print("No delete event detected, go ahead and delete.")
 					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
+				else:
+					print("EventRecord already exists, i.e., appt was already deleted")
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
