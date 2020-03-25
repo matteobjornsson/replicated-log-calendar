@@ -64,7 +64,7 @@ class Log:
             if er.appointment[0] == eR_name and er.operation == "Insert":
                 return er
 
-        return None
+        return EventRecord("", ("", -1, -1, -1, []), -1, -1)
         #raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
     
     def check_delete_eR(self, eR_name):
