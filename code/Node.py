@@ -47,7 +47,7 @@ class Node:
 		print("\n Log at beginning of receive: ")
 		self.log.printLog()
 		for eventRecordFromNP in received_NP_log:
-			print(eventRecordFromNP)
+			print(eventRecordFromNP.stringRepresentation)
 			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
 				new_events.append(eventRecordFromNP)
 
@@ -56,6 +56,7 @@ class Node:
 			# TimeTable record of that node time append record to our log)
 
 			if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
+				print("incoming event operation %s for appt %s from node %d"%(eventRecordFromNP.operation, eventRecordFromNP.appointment[0], eventRecordFromNP.nodeID) )
 				"""
 				Check for conflicts
 				"""
