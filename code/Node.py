@@ -47,52 +47,52 @@ class Node:
 		print("\n Log at beginning of receive: ")
 		self.log.printLog()
 		for eventRecordFromNP in received_NP_log:
-			print(eventRecordFromNP.stringRepresentation)
-			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
-				new_events.append(eventRecordFromNP)
-
+			print("incoming event: ", eventRecordFromNP.stringRepresentation)
 			#Create list of new eventrecords to update log later
 			# (if time of incoming event time is newer (greater than) our 
 			# TimeTable record of that node time append record to our log)
+			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
+				new_events.append(eventRecordFromNP)
 
-			if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
-				print("incoming event operation %s for appt %s from node %d"%(eventRecordFromNP.operation, eventRecordFromNP.appointment[0], eventRecordFromNP.nodeID) )
-				"""
-				Check for conflicts
-				"""
-				try:
-					self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
-				except ValueError:
-					print("conflict resolution triggered")
-					
-					self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
-					conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
-					conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
-					if conflicting_eR == None:
-						print("NOTHINGNESS")
+				print("recorded as new event: ", eventRecordFromNP.stringRepresentation)
+				if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
+					print("incoming event operation %s for appt %s from node %d"%(eventRecordFromNP.operation, eventRecordFromNP.appointment[0], eventRecordFromNP.nodeID) )
+					"""
+					Check for conflicts
+					"""
+					try:
+						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
+					except ValueError:
+						print("conflict resolution triggered")
+						
+						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
+						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
+						conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
+						if conflicting_eR == None:
+							print("NOTHINGNESS")
+						else:
+							conflicting_eR_nodeID = conflicting_eR.nodeID
+						#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
+						if eventRecordFromNP.nodeID > conflicting_eR_nodeID:
+							#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
+							print("incoming conflicting appt takes precedence, overrides local conflict")
+							self.deleteCalendarAppointment(conflicting_appt_name)
+						elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
+							self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
+							print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
+							#TODO: SEND DELETE TO NODES
+					#else:
+					#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
+				elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
+					#try:
+					if not self.log.check_delete_eR(eventRecordFromNP.appointment[0]):
+					#except ValueError:
+						# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+						print("No delete event detected, go ahead and delete.")
+						self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 					else:
-						conflicting_eR_nodeID = conflicting_eR.nodeID
-					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
-					if eventRecordFromNP.nodeID > conflicting_eR_nodeID:
-						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
-						print("incoming conflicting appt takes precedence, overrides local conflict")
-						self.deleteCalendarAppointment(conflicting_appt_name)
-					elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
-						self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
-						print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
-						#TODO: SEND DELETE TO NODES
-				#else:
-				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
-			elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
-				#try:
-				if not self.log.check_delete_eR(eventRecordFromNP.appointment[0]):
-				#except ValueError:
-					# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					print("No delete event detected, go ahead and delete.")
-					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
-				else:
-					print("EventRecord already exists, i.e., appt was already deleted")
-				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
+						print("EventRecord already exists, i.e., appt was already deleted")
+					#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
 		#print("\nReceived message, here is the updated time table:")
