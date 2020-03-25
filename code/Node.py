@@ -74,8 +74,8 @@ class Node:
 						print("incoming conflicting appt takes precedence, overrides local conflict")
 						self.deleteCalendarAppointment(conflicting_appt_name)
 					else: 
-						#self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
-						print("Appointment was not inserted because there is a conflict. Incoming event is being deleted.")
+						self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
+						print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
 						#TODO: SEND DELETE TO NODES
 				#else:
 				#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
@@ -83,6 +83,7 @@ class Node:
 				try:
 					self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete")
 				except ValueError:
+					# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					print("No delete event detected, go ahead and delete.")
 					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
@@ -207,12 +208,14 @@ class Node:
 
 
 	def deleteCalendarAppointment(self, appointmentName = None):
-
+		
 		if appointmentName == None:
 			appointmentName = input(
 				"Enter the exact text of the appointment name you wish to delete: "
 				)
+		print('you have entered \"delete calendar appointment land\" for appointment: {}'.format(appointmentName))
 		if self.calendar.contains(appointmentName):
+			print("calendar contains appointment to be deleted")
 			lamportTime = self.clock()
 			self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
 			eR = ER.EventRecord(
