@@ -204,6 +204,7 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
+		sleep(3)
 		for n in node.messenger.otherNodes:
 			node.send(n)
 
@@ -283,7 +284,7 @@ if __name__ == '__main__':
 		else:
 			node.addCalendarAppointment(choices[int(userChoice)])
 
-		sleep(3)
+		#sleep(3)
 
 		#for n in node.messenger.otherNodes:
 		#	node.send(n)
