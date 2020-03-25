@@ -63,7 +63,9 @@ class Log:
         for er in self.log:
             if er.appointment[0] == eR_name and er.operation == "Insert":
                 return er
-        raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
+
+        return None
+        #raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
     
     def check_delete_eR(self, eR_name):
         for er in self.log:

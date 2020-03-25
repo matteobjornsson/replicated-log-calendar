@@ -68,13 +68,16 @@ class Node:
 					self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
 					conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
 					conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
-					
+					if conflicting_eR == None:
+						print("NOTHINGNESS")
+					else:
+						conflicting_eR_nodeID = conflicting_eR.nodeID
 					#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
-					if eventRecordFromNP.nodeID > conflicting_eR.nodeID:
+					if eventRecordFromNP.nodeID > conflicting_eR_nodeID:
 						#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 						print("incoming conflicting appt takes precedence, overrides local conflict")
 						self.deleteCalendarAppointment(conflicting_appt_name)
-					elif conflicting_eR.nodeID > eventRecordFromNP.nodeID: 
+					elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
 						self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
 						print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
 						#TODO: SEND DELETE TO NODES
