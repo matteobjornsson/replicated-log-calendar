@@ -81,6 +81,7 @@ class Node:
 				try:
 					self.log.get_eventrecord(eventRecordFromNP.appointment[0], "Delete")
 				except ValueError:
+					print("No delete event detected, go ahead and delete.")
 					self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 				#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
