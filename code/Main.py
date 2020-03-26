@@ -8,9 +8,16 @@ args = parser.parse_args()
 node = Node.Node(4, args.nodeID)
 
 ## appointments for test purposes:
-choice5= ("DMV", 3, 12.5, 13.5, [1,2,3])
+choice5 = ("DMV", 3, 12.5, 13.5, [1,2,3])
 choice6 = ("Skiing", 3, 6.0, 17.0, [3])
 ###
+
+def check_refresh():
+    while True:
+        if node.refresh_calendar:
+            node.displayCalendar()
+        sleep(.5)
+
 
 threading.Thread(
     target=check_refresh, 
@@ -52,9 +59,4 @@ while running_calendar:
     else:
         "Not a valid choice, please enter 1,2,3, or 4."
 
-def check_refresh(self):
-    while True:
-        if node.refresh_calendar:
-            node.displayCalendar()
-        sleep(.5)
 
