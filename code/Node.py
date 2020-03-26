@@ -161,12 +161,13 @@ class Node:
 			appt_name, appointment[1], appointment[2], appointment[3]
 			)
 		announcement = (
-			  "\n************************************\n"
+		    "\n***********************************************\n"
 			+ "Notice:\n\n"
-			+ "Due to conflicting appointments, the following appointment in "
-			+ " which you were listed as a participant has been cancelled: \n"
+			+ "Due to conflicting appointments, the following "
+			+ "appointment in which you were listed as a "
+			+ "participant has been cancelled: \n"
 			+ appt_string
-			+ "************************************\n"
+			+ "\n***********************************************\n"
 
 		)
 		message = (False, announcement)
