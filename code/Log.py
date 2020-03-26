@@ -35,22 +35,17 @@ class Log:
             os.mkdir('../files') 
         filename = "logOutput" + str(nodeID) + ".tsv" 
         self.file_path = '../files/' + filename
-        if freshboot:
+        try:
+            with open(self.file_path, 'r') as read_file:
+                csv_reader = csv.reader(read_file, delimiter='\t')
+                next(csv_reader)
+                for line in csv_reader:
+                    self.log.append(self.read_log_line(line))
+                    #line = read_file.readline()
+        except FileNotFoundError:
             with open(self.file_path, 'w+') as out_file:
                 logWriter = csv.writer(out_file, delimiter='\t')
                 logWriter.writerow(self.header)
-        else:    
-            try:
-                with open(self.file_path, 'r') as read_file:
-                    csv_reader = csv.reader(read_file, delimiter='\t')
-                    next(csv_reader)
-                    for line in csv_reader:
-                        self.log.append(self.read_log_line(line))
-                        #line = read_file.readline()
-            except FileNotFoundError:
-                with open(self.file_path, 'w+') as out_file:
-                    logWriter = csv.writer(out_file, delimiter='\t')
-                    logWriter.writerow(self.header)
 
     def insert(self, eR: EventRecord):
         self.log.append(eR)

@@ -31,13 +31,12 @@ class Calendar:
         #file_path = '../files/logOutput.tsv'
         filename = "calendar" + str(nodeID) + ".pkl"
         self.file_path = '../files/' + filename
-        if not freshBoot:
-            try:
-                read_file = open(self.file_path, 'rb')
-                self.appointments = pickle.load(read_file)
-                read_file.close()
-            except FileNotFoundError:
-                print("No calendar object available to read in")
+        try:
+            read_file = open(self.file_path, 'rb')
+            self.appointments = pickle.load(read_file)
+            read_file.close()
+        except FileNotFoundError:
+            print("No calendar object available to read in")
         self.updateCalendarFile() 
 
     def insertAppointment(self, appointment: tuple, override = False) -> None: 
