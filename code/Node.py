@@ -12,6 +12,7 @@ from time import sleep
 class Node:
 
 	received_notifications = []
+	refresh_calendar = False
 
 ## constructor: 
 
@@ -98,6 +99,7 @@ class Node:
 						self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 					else:
 						print("EventRecord already exists, i.e., appt was already deleted")
+				self.refresh_calendar = True
 
 		#Update timetable
 		self.update_timetable(received_timetable, received_nodeID)

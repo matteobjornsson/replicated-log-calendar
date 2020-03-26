@@ -1,5 +1,6 @@
 import Node
-import argparse, pickle
+import argparse, pickle, threading
+from time import sleep
 
 parser =  argparse.ArgumentParser(description='Node instance number (1-4)')
 parser.add_argument('nodeID', help='NodeID.', type=int)
@@ -47,3 +48,14 @@ while running_calendar:
     
     else:
         "Not a valid choice, please enter 1,2,3, or 4."
+
+def check_refresh(self):
+    while True:
+        if node.refresh_calendar:
+            node.displayCalendar()
+        sleep(.5)
+
+threading.Thread(
+    target=check_refresh, 
+    daemon=True
+).start()
