@@ -291,28 +291,6 @@ if __name__ == '__main__':
 		node.displayCalendar()
 
 
-		
-
-
-
-	"""
-	try:
-		read_file = open('incoming2.pkl', 'rb')
-		incomingMessage = pickle.load(read_file)
-		read_file.close()
-	except FileNotFoundError:
-		print("No incoming message available to read in")
-	
-	incomingNPLog = incomingMessage[0]
-	incomingNPTimeTable = incomingMessage[1]
-	node.receive(incomingNPLog, incomingNPTimeTable)
-	node.displayCalendar()
-	print(node.timeTable)
-	"""
-
-	
-	
-
 """
 time table at end of main():
 

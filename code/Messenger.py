@@ -4,6 +4,7 @@ from time import sleep
 class Messenger:
 
 	out_sockets = {}
+	in_addresses = {}
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
@@ -111,6 +112,7 @@ class Messenger:
 		while True:
 			try:# attempt to connect socket to other node
 				s.connect((host_ip, port))
+				print("out socket from self ", self.nodeID, " to ", destination, " at ", self.out_sockets[destination])
 				print("Out socket connected to :", destination)
 				break
 			except socket.error:
@@ -136,6 +138,7 @@ class Messenger:
 			print('listening for incoming socket connection')
 			c, addr = s.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
+			self.in_addresses[c] = addr
 			# start a thread with that connnection to listen for add'l msgs
 			self.in_socket_threads.append(
 				threading.Thread(
@@ -145,6 +148,8 @@ class Messenger:
 			)
 			# once all three other nodes connect, end this thread. 
 			if len(self.in_socket_threads)>2:
+				for x, y in self.in_addresses.items():
+					print(x, y)
 				break
 			
 	def message_collector_thread(self, connection):
@@ -168,18 +173,13 @@ class Messenger:
 			#report when a connection closes or fails. 
 			if not packet:
 				print("exiting socket")
+				print(connection)
+				for s in self.in_socket_threads:
+					print(type(s))
 				break
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
 		   
-
-	def test(self):
-		while True:
-			message = ("Message from Node {} : ".format(self.nodeID) + '\"' 
-						+ input("\nType a message to send to the other nodes:\n") 
-						+ '\"')
-			for node in self.otherNodes:
-				self.send(node, message)
 
 ######  Normal Operation Methods ###### 
 	
