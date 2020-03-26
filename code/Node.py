@@ -11,7 +11,7 @@ from time import sleep
 
 class Node:
 
-	self.received_notifications = []
+	received_notifications = []
 
 ## constructor: 
 
