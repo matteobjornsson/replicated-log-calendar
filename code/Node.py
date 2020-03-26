@@ -173,7 +173,7 @@ class Node:
 
 		for node in participants:
 			if node == self.nodeID:
-				print(announcement)
+				self.messenger.message_queue.append(message)
 			else:
 				self.messenger.send(node, message)
 
