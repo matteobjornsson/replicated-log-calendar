@@ -152,7 +152,7 @@ class Node:
 		'''
 	
 	def notify_of_conflict_resolution(self, deleted_event: ER):
-		appointment = deleted_event[1]
+		appointment = deleted_event.apppointment
 		appt_name = appointment[0]
 		participants = appointment[4]
 		appt_string = "Appointment: {} \nDay: {}\nFrom: {} To: {}".format(
@@ -328,7 +328,7 @@ if __name__ == '__main__':
 			node.deleteCalendarAppointment()
 		else:
 			node.addCalendarAppointment(choices[int(userChoice)])
-			
+
 		node.displayCalendar()
 
 
