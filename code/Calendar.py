@@ -24,7 +24,7 @@ class Calendar:
     '''
     calendarFile = None
 
-    def __init__(self, nodeID, freshBoot: bool):
+    def __init__(self, nodeID):
         self.appointments = {}
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
