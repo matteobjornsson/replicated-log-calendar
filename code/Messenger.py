@@ -62,7 +62,7 @@ class Messenger:
 				#else:
 				n = (int(line[0]), line[1], int(line[2]), otherNodes)
 				nodes.append(n)
-				print(n)
+				#print(n)
 		return nodes
 
 ###### Initialization Methods ###### 
@@ -112,7 +112,7 @@ class Messenger:
 		while True:
 			try:# attempt to connect socket to other node
 				s.connect((host_ip, port))
-				print("out socket from self ", self.nodeID, " to ", destination, " at ", self.out_sockets[destination])
+				#print("out socket from self ", self.nodeID, " to ", destination, " at ", self.out_sockets[destination])
 				print("Out socket connected to :", destination)
 				break
 			except socket.error:
@@ -135,7 +135,7 @@ class Messenger:
 		#print("Host: ", host, "Port: ", port)
 		s.bind(('', port)) # bind to predetermined port
 		s.listen(4) #accept up to 4 connections
-		print(s)
+
 		while True:
 			print('listening for incoming connections', )
 			c, addr = s.accept() # store the incoming connection in c, addr
@@ -149,10 +149,8 @@ class Messenger:
 				).start()
 			)
 			# once all three other nodes connect, end this thread. 
-			if len(self.in_socket_threads)>2:
-				for x, y in self.in_addresses.items():
-					print(x, y)
-				break
+			#if len(self.in_socket_threads)>2:
+				#break
 			
 	def message_collector_thread(self, connection):
 		"""
@@ -178,12 +176,10 @@ class Messenger:
 				print("Failed IP: ", failed_IP)
 				failed_node = 0
 				for item in self.nodes:
-					print(item)
 					if item[1] == failed_IP:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
-				print(connection)
 				for s in self.in_socket_threads:
 					print(type(s))
 				break
