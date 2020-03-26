@@ -127,7 +127,8 @@ class Messenger:
 		'''
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
-		host = socket.gethostbyaddr() # acquire self hostname
+		#host = socket.gethostbyaddr() # acquire self hostname
+		host = self.nodes[self.nodeID-1][1]
 		port = self.nodes[self.nodeID-1][2]
 		print("Host: ", host, "Port: ", port)
 		s.bind((host, port)) # bind to predetermined port
