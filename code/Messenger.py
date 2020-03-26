@@ -180,12 +180,13 @@ class Messenger:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
-				
+
 				# reinstate connection: 
 				self.reinit_failed_outgoing_connection(failed_node)
 				self.reinit_incoming_message_thread()
+				print("\n** NODE ", self.nodeID, " connected to all other nodes. **\n")
 				break
-
+			print("still in this thread")
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
 
@@ -218,7 +219,7 @@ class Messenger:
 			try:# attempt to connect socket to other node
 				hostSocket.connect((destinationIP, destinationPort))
 				#print("out socket from self ", self.nodeID, " to ", destination, " at ", self.out_sockets[destination])
-				print("Out socket connected to :", destinationNode)
+				print("Out socket is reconnected to :", destinationNode)
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
@@ -226,11 +227,12 @@ class Messenger:
 				# debug print statemet to see how in socket thread count changes
 				sleep(2)
 				continue
+		
 
 	def reinit_incoming_message_thread(self):
 		print('listening for incoming connections on ', self.listen_socket.getsockname() )
 		c, addr = self.listen_socket.accept() # store the incoming connection in c, addr
-		print("Input socket connected to: ", addr) 
+		print("Input socket reconnected to: ", addr) 
 		self.in_sockets[addr[1]] = c
 		# start a thread with that connnection to listen for add'l msgs
 		self.in_socket_threads.append(
