@@ -16,6 +16,11 @@ def check_refresh():
     while True:
         if node.refresh_calendar:
             node.displayCalendar()
+            print(
+                "What action would you like to perform? \n\t1. Insert "
+                + "appointment \n\t2. Delete appointment \n\t3. Refresh "
+                + "calendar \n\t4. Exit calendar application\n"
+            )
         sleep(.5)
 
 
@@ -28,7 +33,11 @@ running_calendar = True
 print("Welcome! \n Here is your current calendar:\n")
 node.displayCalendar()
 while running_calendar:
-    print("What action would you like to perform? \n\t1. Insert appointment \n\t2. Delete appointment \n\t3. Refresh calendar \n\t4. Exit calendar application\n")
+    print(
+        "What action would you like to perform? \n\t1. Insert "
+        + "appointment \n\t2. Delete appointment \n\t3. Refresh "
+        + "calendar \n\t4. Exit calendar application\n"
+    )
     user_choice = input()
     try:
         user_choice = int(user_choice)
