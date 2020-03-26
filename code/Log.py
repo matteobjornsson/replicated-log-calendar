@@ -29,6 +29,13 @@ class Log:
     header = ["TIME","NODE ID", "OPERATION", "APPOINTMENT NAME", "DAY", "START", "END", "PARTICIPANTS"]
 
     def __init__(self, nodeID: int):
+        """
+        Log constructor
+        Attributes:
+            log: list of eventrecords
+            file_path: filepath to read and write from
+
+        """
         self.log = []
         self.logfile = ''
         if not os.path.isdir('../files'):
@@ -48,6 +55,10 @@ class Log:
                 logWriter.writerow(self.header)
 
     def insert(self, eR: EventRecord):
+        """
+        Insert new eventrecord (can be delete or insert appointment),
+        and add to file
+        """
         self.log.append(eR)
 
         with open(self.file_path, 'a') as out_file:
@@ -55,22 +66,29 @@ class Log:
             logWriter.writerow(eR.iterable)
     
     def get_insert_eventrecord(self, eR_name):
+        """
+        Check whether insert event already exists in log
+        """
         for er in self.log:
             if er.appointment[0] == eR_name and er.operation == "Insert":
                 return er
 
         return EventRecord("", ("", -1, -1, -1, []), -1, -1)
-        #raise LogEventError("")#No existing eventrecord with name" + eR_name + " operation " + eR_operation)
+        #raise LogEventError("") #No existing eventrecord with name" + eR_name + " operation " + eR_operation) #Sadly this caused some issues...
     
     def check_delete_eR(self, eR_name):
+        """
+        Check whether delete event already exists in log
+        """
         for er in self.log:
             if er.appointment[0] == eR_name and er.operation == "Delete":
                 return True
         return False
 
     def truncateLog(self, eventRecords):
-        # if all nodes know of an eventRecord, delete it from the local log
-        # do that 
+        """
+        If all nodes know of an eventRecord, delete it from the local log 
+        """
         with open(self.file_path, 'w') as out_file:
             logWriter = csv.writer(out_file, delimiter='\t')
             for eR in eventRecords:
@@ -78,7 +96,9 @@ class Log:
         self.log = eventRecords
 
     def read_log_line(self, line):
-        #print(line[7])
+        """
+        Reading a single line in a log
+        """
         participants = [p for p in ast.literal_eval(line[7])]
         appointment = (line[3], line[4], line[5], line[6], participants)
         new_record = EventRecord.EventRecord(line[2], appointment, int(line[0]), int(line[1]))
@@ -86,6 +106,9 @@ class Log:
         return new_record
 
     def printLogFromLogfile(self):
+        """
+        Printing entire partial log from existing file
+        """
         with open(self.file_path, 'r') as read_file:
             csv_reader = csv.reader(read_file, delimiter='\t')
             next(csv_reader)
@@ -93,12 +116,16 @@ class Log:
                 print(line)
 
     def printLog(self):
+        """
+        Printing partial log from current memory, i.e., saved python object
+        """
         print("TIME\tNODEID\tOP\tNAME\tDAY\tSTART\tEND\tPARTICIPANTS")
         for x in self.log:
             print(x.stringRepresentation)
 
 
 if __name__ == '__main__':
+    #TESTING
     log = Log()
     event = ("Doctor Appt", 3, 10.0, 11.5, [1,2])
     eR = EventRecord.EventRecord("Insert", event, 4, 1)
