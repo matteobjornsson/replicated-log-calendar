@@ -137,7 +137,7 @@ class Messenger:
 		s.listen(4) #accept up to 4 connections
 
 		while True:
-			print('listening for incoming connections', )
+			print('listening for incoming connections on ', s.getsockname() )
 			c, addr = s.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
 			self.in_sockets[addr[1]] = c
