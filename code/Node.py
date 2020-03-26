@@ -188,7 +188,7 @@ class Node:
 				if message[0]:
 					self.receive(message[1], message[2], message[3])
 				else:
-					if not self.received_notifications.contains(message[1]):
+					if not message[1] in self.received_notifications:
 						self.received_notifications.append(message[1])
 						print(message[1])
 
