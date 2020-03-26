@@ -146,6 +146,7 @@ class Messenger:
 				threading.Thread(
 					target=self.message_collector_thread, 
 					args=(c, ),
+					daemon=True
 				).start()
 			)
 			# once all three other nodes connect, end this thread. 
@@ -239,6 +240,7 @@ class Messenger:
 			threading.Thread(
 				target=self.message_collector_thread, 
 				args=(c, ),
+				daemon=True
 			).start()
 		)
 

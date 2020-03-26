@@ -21,8 +21,10 @@ while running_calendar:
     
     if user_choice == 1:
         node.addCalendarAppointment()
+        node.displayCalendar()
     elif user_choice == 2:
         node.deleteCalendarAppointment()
+        node.displayCalendar()
     elif user_choice == 3:
         node.displayCalendar()
     elif user_choice == 4:
