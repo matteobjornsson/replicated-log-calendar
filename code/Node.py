@@ -157,13 +157,17 @@ class Node:
 		appointment = deleted_event.appointment
 		appt_name = appointment[0]
 		participants = appointment[4]
-		appt_string = "Appointment: {} \nDay: {}\nFrom: {} To: {}".format(
+		appt_string = "Appointment: {} \nDay: {}\nTime: from {} to {}".format(
 			appt_name, appointment[1], appointment[2], appointment[3]
 			)
 		announcement = (
-			"Due to conflicting appointments, the following appointment in "
+			  "************************************\n"
+			+ "Notice:\n"
+			+ "Due to conflicting appointments, the following appointment in "
 			+ " which you were listed as a participant has been cancelled: \n"
 			+ appt_string
+			+ "************************************\n"
+
 		)
 		message = (False, announcement)
 
