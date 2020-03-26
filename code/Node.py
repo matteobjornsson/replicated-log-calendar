@@ -154,7 +154,7 @@ class Node:
 		'''
 	
 	def notify_of_conflict_resolution(self, deleted_event: ER):
-		appointment = deleted_event.apppointment
+		appointment = deleted_event.appointment
 		appt_name = appointment[0]
 		participants = appointment[4]
 		appt_string = "Appointment: {} \nDay: {}\nFrom: {} To: {}".format(
