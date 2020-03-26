@@ -279,7 +279,7 @@ class Node:
 				if end_time <= start_time:
 					print("End time cannot be before start time.")
 					continue
-				elif:
+				else:
 					break
 			while True:
 				try:
@@ -362,6 +362,8 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	node = Node(4, args.nodeID, args.local)
+
+	node.addCalendarAppointment()
 
 	choices = {}
 	choices[1] = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
