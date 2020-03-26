@@ -98,7 +98,7 @@ class Messenger:
 			self.allThreads.append(x) #threads stored for reference
 
 
-	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int, reconnect = False):
+	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int):
 		'''
 		Method takes a socket and connection parameters and connects to that 
 		destination. 
@@ -107,8 +107,7 @@ class Messenger:
 			s:: socket to be used to establish connection
 			host_ip::   destination IP
 			port::      destination Port
-			destination::   node ID of destination.
-			reconnect:: differentiates initial connection from reconnect 
+			destination::   node ID of destination. 
 		'''
 		while True:
 			try:# attempt to connect socket to other node
@@ -118,14 +117,11 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				if not reconnect:
-					print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
-				else:
-					print("Connection has failed, reconnecting to node ", destination, " at ", host_ip, port, ' ......')
+				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				# debug print statemet to see how in socket thread count changes
 				for sthread in self.in_socket_threads:
 					print(type(sthread))
-				sleep(2)
+				sleep(3)
 				continue
 
 
@@ -144,7 +140,7 @@ class Messenger:
 			print('listening for incoming connections', )
 			c, addr = s.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
-			self.in_sockets[c] = addr[1]
+			self.in_sockets[addr[1]] = c
 			# start a thread with that connnection to listen for add'l msgs
 			self.in_socket_threads.append(
 				threading.Thread(
@@ -153,8 +149,8 @@ class Messenger:
 				).start()
 			)
 			# once all three other nodes connect, end this thread. 
-			#if len(self.in_socket_threads)>2:
-				#break
+			if len(self.in_socket_threads)>2:
+				break
 			
 	def message_collector_thread(self, connection):
 		"""
@@ -185,8 +181,9 @@ class Messenger:
 						break
 				print("exiting socket. node ", failed_node, " failed")
 				self.reinit_failed_outgoing_connection(failed_node)
-				
-
+				self.reinit_incoming_message_thread(self.in_sockets[failed_IP])
+				continue
+			
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
 
@@ -212,18 +209,31 @@ class Messenger:
 		destinationIP = self.nodes[destinationNode-1][1]
 		destinationPort = self.nodes[destinationNode-1][2]
 		
-		# connection is threaded because the other nodes may or may not 
-		# be running or accepting connections yet
-		self.connect_socket(
-					hostSocket,
-					destinationIP,
-					destinationPort,
-					destinationNode,
-					True
-			)
+		while True:
+			try:# attempt to connect socket to other node
+				hostSocket.connect((destinationIP, destinationPort))
+				#print("out socket from self ", self.nodeID, " to ", destination, " at ", self.out_sockets[destination])
+				print("Out socket connected to :", destinationNode)
+				break
+			except socket.error:
+				# while the connection fails, wait, and retry
+				print("Connection has failed, reconnecting to node ", destinationNode, " at ", destinationIP, destinationPort, ' ......')
+				# debug print statemet to see how in socket thread count changes
+				sleep(2)
+				continue
 
-
-
+	def reinit_incoming_message_thread(self, failedSocket):
+		print('listening for incoming connections', )
+		c, addr = failedSocket.accept() # store the incoming connection in c, addr
+		print("Input socket connected to: ", addr) 
+		self.in_sockets[addr[1]] = c
+		# start a thread with that connnection to listen for add'l msgs
+		self.in_socket_threads.append(
+			threading.Thread(
+				target=self.message_collector_thread, 
+				args=(c, ),
+			).start()
+		)
 
 if __name__ == '__main__':
 	parser =  argparse.ArgumentParser(description='Messenger Utility')
