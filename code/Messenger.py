@@ -8,6 +8,7 @@ class Messenger:
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
+	listen_socket = None
 
 	localNodes =[(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
 			 (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
@@ -33,6 +34,11 @@ class Messenger:
 			self.nodes = self.read_in_node_addresses()
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
 		
+		self.listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
+		self.listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
+		port = self.nodes[self.nodeID-1][2]
+		self.listen_socket.bind(('', port)) # bind to predetermined port
+		self.listen_socket.listen(4) #accept up to 4 connections
 
 		# start a thread to grant incoming connections from other nodes
 		connection_thread = (
@@ -130,15 +136,11 @@ class Messenger:
 		Method creates a socket that listens for incoming connections, assigning
 		them to a new thread on arrival to accept messages from connection.
 		'''
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
-		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
-		port = self.nodes[self.nodeID-1][2]
-		s.bind(('', port)) # bind to predetermined port
-		s.listen(4) #accept up to 4 connections
+
 
 		while True:
-			print('listening for incoming connections on ', s.getsockname() )
-			c, addr = s.accept() # store the incoming connection in c, addr
+			print('listening for incoming connections on ', self.listen_socket.getsockname() )
+			c, addr = self.listen_socket.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
 			self.in_sockets[addr[1]] = c
 			# start a thread with that connnection to listen for add'l msgs
@@ -181,7 +183,7 @@ class Messenger:
 						break
 				print("exiting socket. node ", failed_node, " failed")
 				self.reinit_failed_outgoing_connection(failed_node)
-				self.reinit_incoming_message_thread(self.in_sockets[failed_IP])
+				self.reinit_incoming_message_thread()
 				continue
 
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
@@ -222,9 +224,9 @@ class Messenger:
 				sleep(2)
 				continue
 
-	def reinit_incoming_message_thread(self, failedSocket):
-		print('listening for incoming connections', )
-		c, addr = failedSocket.accept() # store the incoming connection in c, addr
+	def reinit_incoming_message_thread(self):
+		print('listening for incoming connections on ', )
+		c, addr = self.listen_socket.accept() # store the incoming connection in c, addr
 		print("Input socket connected to: ", addr) 
 		self.in_sockets[addr[1]] = c
 		# start a thread with that connnection to listen for add'l msgs
