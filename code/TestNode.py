@@ -7,26 +7,24 @@ args = parser.parse_args()
 node = Node.Node(4, args.nodeID, 1)
 
 running_calendar = True
-
-while running_calendar:
-    print("Welcome! \n ")
-    userChoice = input("What action would you like to perform? \n\t1. View calendar \n\t2. Insert appointment \n\t3. Delete appointment")
-    try:
-        ins_del_bool = int(userChoice)
-    except ValueError:
-        "Not a valid input, try again."
-    
-"""
-try:
-    read_file = open('incoming2.pkl', 'rb')
-    incomingMessage = pickle.load(read_file)
-    read_file.close()
-except FileNotFoundError:
-    print("No incoming message available to read in")
-
-incomingNPLog = incomingMessage[0]
-incomingNPTimeTable = incomingMessage[1]
-node.receive(incomingNPLog, incomingNPTimeTable)
+print("Welcome! \n Here is your current calendar:\n")
 node.displayCalendar()
-print(node.timeTable)
-"""
+while running_calendar:
+    print("What action would you like to perform? \n\t1. Insert appointment \n\t2. Delete appointment \n\t3. Refresh calendar \n\t4. Exit calendar application\n")
+    user_choice = input()
+    try:
+        user_choice = int(user_choice)
+    except ValueError:
+        print("Not a valid input, try again.")
+    
+    if user_choice == 1:
+        node.addCalendarAppointment()
+    elif user_choice == 2:
+        node.deleteCalendarAppointment()
+    elif user_choice == 3:
+        node.displayCalendar()
+    elif user_choice == 4:
+        print("\nI hope your calendar is up to date. Enjoy the rest of your week.")
+        running_calendar = False
+    else:
+        "Not a valid choice, please enter 1,2,3, or 4."

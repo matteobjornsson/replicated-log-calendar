@@ -1,4 +1,5 @@
 import pickle, os
+import numpy as np
 
 class CalendarConflictError(ValueError):
     '''Raise error when a conflicting appointment occurs'''
@@ -139,12 +140,45 @@ class Calendar:
 
 
     def printCalendar(self) -> None:
-        #with open('../files/calendar.pickle', 'rb') as calendarFile:
-        #    unpickledCalendar = pickle.load(calendarFile)
-        print('\nCalendar: ')
+        '''
+        appointment = (
+            name: str, 
+            day: int, 
+            start_time: float, 
+            end_time: float, 
+            participants: list
+            )
+        '''
+        print('\nCalendar:\n############################################################################################\n')
+        if bool(self.appointments):
+            col_width = max(max(len(name) for name in self.appointments.keys()), len("Appointment"))
+        else:
+            col_width = len("Appointment")
+        week_dict = {"Sunday":[], "Monday":[], "Tuesday":[], "Wednesday":[], "Thursday":[], "Friday":[], "Saturday":[]}
+        weekday_width = max(len(name) for name in week_dict.keys())
+        print("{} \t {} \t {} \t {} \t {}".format("".ljust(weekday_width),"Appointment".ljust(col_width), "Start", "End", "Participants"))
         for appointmentName, appointment in self.appointments.items():
-            print(appointment)
-
+            if appointment[1] == 1:
+                week_dict["Sunday"].append(list(appointment))
+            elif appointment[1] == 2:
+                week_dict["Monday"].append(list(appointment))
+            elif appointment[1] == 3:
+                week_dict["Tuesday"].append(list(appointment))
+            elif appointment[1] == 4:
+                week_dict["Wednesday"].append(list(appointment))
+            elif appointment[1] == 5:
+                week_dict["Thursday"].append(list(appointment))
+            elif appointment[1] == 6:
+                week_dict["Friday"].append(list(appointment))
+            elif appointment[1] == 7:
+                week_dict["Saturday"].append(list(appointment))
+        for weekday, appt_list in week_dict.items():
+            print("{}:\n------------\n".format(weekday.ljust(weekday_width)))
+            if appt_list != []:
+                np.argsort(np.array(appt_list)[:,2])
+                for appt in appt_list:
+                    print("{} \t {} \t {} \t {} \t {}".format("".ljust(weekday_width),appt[0].ljust(col_width), '{0:02.0f}:{1:02.0f}'.format(*divmod(appt[2] * 60, 60)), '{0:02.0f}:{1:02.0f}'.format(*divmod(appt[3] * 60, 60)), appt[4]))
+    
     def contains(self, appointmentName: str) -> bool:
         return (appointmentName in self.appointments)
 
@@ -154,13 +188,14 @@ class Calendar:
 
 if __name__ == '__main__':
     # Testing... Testing..... 
-    cal = Calendar()
+    cal = Calendar(1, True)
     doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
+    dentalAppointment = ("Dentist Appointment", 2, 14.5, 18.5, [1,2])
     cal.insertAppointment(doctorAppointment)
+    cal.insertAppointment(dentalAppointment)
     cal.insertAppointment(("DMV", 5, 12.5, 13.5, [4]))
     cal.insertAppointment(("Skiing", 7, 8, 18, [2,3]))
     cal.printCalendar()
-    cal.deleteAppointment("DMV")
-    cal.printCalendar()
+
 
 

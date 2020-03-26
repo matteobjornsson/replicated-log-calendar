@@ -69,13 +69,13 @@ class Node:
 						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
 						conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
 						if conflicting_eR.operation == "": #if conflicting_eR == None:
-							print("NOTHINGNESS")
+							print("")
 						else:
 							conflicting_eR_nodeID = conflicting_eR.nodeID
 						#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
 						if eventRecordFromNP.nodeID > conflicting_eR_nodeID:
 							#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
-							print("incoming conflicting appt takes precedence, overrides local conflict")
+							print("Incoming conflicting appt takes precedence, overrides local conflict")
 							self.deleteCalendarAppointment(conflicting_appt_name)
 						elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
 							self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
@@ -92,22 +92,12 @@ class Node:
 						self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 					else:
 						print("EventRecord already exists, i.e., appt was already deleted")
-					#TODO: currently cannot handle when deleting non existing event, for example, insert arrived later.
 
 		#Update timetable
-		#print("\nReceived message, here is the updated time table:")
 		self.update_timetable(received_timetable, received_nodeID)
 		
-		#print('and the updated calendar: ')
-		#self.displayCalendar()
-
 		#Write new log to file
 		self.update_log(new_events)
-
-		print("\nLog at end of receive: ")
-		self.log.printLog()
-		
-		self.displayCalendar()
 
 	def update_log(self, new_events):
 		"""
@@ -175,23 +165,51 @@ class Node:
 	def addCalendarAppointment(self, appointment = None):
 		if appointment == None:
 			name = input("Enter the name of the appointment: ")
-			day = input("Enter the day of the appointment: \n \
-						Sunday: 1 \n \
-						Monday: 2 \n \
-						Tuesday: 3 \n \
-						Wednesday: 4 \n \
-						Thursday: 5 \n \
-						Friday: 6 \n \
-						Saturday: 7 \n")
-			start_time = input("Enter the start time of the appointment. " +\
-				"Use 24hr time, falling on the hour or half hour " +\
-				"(e.g 8:00AM -> 8.0, 5:30pm -> 17.5): ")
-			
-			end_time = input("Enter the start time of the appointment :")
-			participants = input("Enter the ID numbers of all participants, \
-					separated by commas (e.g. 1, 3, 4): \n\n")
-			
-			appointment = (name, day, start_time, end_time, participants)
+			while True:
+				try:	
+					day = int(input("Enter the day of the appointment: \n \
+								Sunday: 1 \n \
+								Monday: 2 \n \
+								Tuesday: 3 \n \
+								Wednesday: 4 \n \
+								Thursday: 5 \n \
+								Friday: 6 \n \
+								Saturday: 7 \n"))
+				except ValueError:
+					print("Day needs to be entered as a number between 1-7.")
+					continue
+				else:
+					break
+			while True:
+				try:
+					start_time = float(input("Enter the start time of the appointment. \n" +\
+						"Use 24hr time, falling on the hour or half hour " +\
+						"(e.g 8:00AM -> 8.0, 5:30pm -> 17.5): "))
+				except ValueError:
+					print("Start time needs to be entered as a number.")
+					continue
+				else:
+					break
+			while True:
+				try:	
+					end_time = float(input("Enter the end time of the appointment :"))
+				except ValueError:
+					print("End time needs to be entered as a number.")
+					continue
+				else:
+					break
+			while True:
+				try:
+					participants = input("Enter the ID numbers of all participants, \
+							separated by commas (e.g. 1, 3, 4): \n\n")
+					part_list = [int(p.strip(' ')) for p in participants.strip('][').split(',')]
+				except ValueError:
+					print("List of participants must be entered as numbers separated by commas.")
+					continue
+				else:
+					break
+				
+			appointment = (name, int(day), float(start_time), float(end_time), part_list)
 		try:
 			self.calendar.insertAppointment(appointment)
 			lamportTime = self.clock()
@@ -199,14 +217,14 @@ class Node:
 			eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
 			self.log.insert(eR)
 
-			print("\"{}\" added to calendar.".format(appointment[0]))
+			#print("\"{}\" added to calendar.".format(appointment[0]))
 		except ValueError:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
 		sleep(3)
-		for n in node.messenger.otherNodes:
-			node.send(n)
+		for n in self.messenger.otherNodes:
+			self.send(n)
 
 		#print statements for debugging
 		#print('\nUpdated time table from insert event: \n')
@@ -220,7 +238,6 @@ class Node:
 			appointmentName = input(
 				"Enter the exact text of the appointment name you wish to delete: "
 				)
-		print('you have entered \"delete calendar appointment land\" for appointment: {}'.format(appointmentName))
 		if self.calendar.contains(appointmentName):
 			print("calendar contains appointment to be deleted")
 			lamportTime = self.clock()
@@ -238,8 +255,8 @@ class Node:
 			print("\"{}\" not in calendar".format(appointmentName))
 
 		# send this update to all other nodes
-		for n in node.messenger.otherNodes:
-			node.send(n)
+		for n in self.messenger.otherNodes:
+			self.send(n)
 
 	def displayCalendar(self): 
 		self.calendar.printCalendar()
