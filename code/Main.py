@@ -12,7 +12,10 @@ choice5= ("DMV", 3, 12.5, 13.5, [1,2,3])
 choice6 = ("Skiing", 3, 6.0, 17.0, [3])
 ###
 
-
+threading.Thread(
+    target=check_refresh, 
+    daemon=True
+).start()
 
 running_calendar = True
 print("Welcome! \n Here is your current calendar:\n")
@@ -55,7 +58,3 @@ def check_refresh(self):
             node.displayCalendar()
         sleep(.5)
 
-threading.Thread(
-    target=check_refresh, 
-    daemon=True
-).start()
