@@ -190,7 +190,7 @@ class Messenger:
 				self.reinit_failed_outgoing_connection(failed_node)
 				self.reinit_incoming_message_thread()
 				print("\n** NODE ", self.nodeID, " reconnected to ", failed_node, ". **\n")
-				self.message_queue.append((2))
+				self.message_queue.append((2,))
 				break
 			# print("still in this thread")
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
