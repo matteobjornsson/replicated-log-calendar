@@ -177,7 +177,8 @@ class Messenger:
 				failed_IP = connection.getpeername()
 				failed_node = 0
 				for item in self.nodes:
-					if item[1] == failed_node:
+					print(item)
+					if item[1] == failed_IP:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
