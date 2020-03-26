@@ -119,8 +119,8 @@ class Messenger:
 				# while the connection fails, wait, and retry
 				#print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				# debug print statemet to see how in socket thread count changes
-				for sthread in self.in_socket_threads:
-					print(type(sthread))
+				#for sthread in self.in_socket_threads:
+				#	print(type(sthread))
 				sleep(3)
 				continue
 
