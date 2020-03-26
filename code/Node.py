@@ -13,6 +13,19 @@ class Node:
 	Each Node has access to its own Log and Calendar, 
 	as well as a Messenger which is in charge of communicating 
 	with the other nodes.
+
+	Methods: 
+		clock()
+		receive()
+			uses: update_log() and update_timetable()
+		send()
+		notify_of_conflict_resolution()
+		check_for_incoming_messages()
+		hasRec()
+	User interaction methods:
+		displayCalendar()
+		addCalendarAppointment()
+		deleteCalendarAppointment()
 	"""
 
 	received_notifications = []
