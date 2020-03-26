@@ -98,7 +98,7 @@ class Messenger:
 			self.allThreads.append(x) #threads stored for reference
 
 
-	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int, reconnect = True):
+	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int, reconnect = False):
 		'''
 		Method takes a socket and connection parameters and connects to that 
 		destination. 
@@ -219,7 +219,7 @@ class Messenger:
 					destinationIP,
 					destinationPort,
 					destinationNode,
-					False
+					True
 			)
 
 
