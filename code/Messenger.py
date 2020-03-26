@@ -183,7 +183,7 @@ class Messenger:
 				break
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
-		   
+		print("end of in thread?")   
 
 ######  Normal Operation Methods ###### 
 	
