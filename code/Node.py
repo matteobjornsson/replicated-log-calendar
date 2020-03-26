@@ -163,9 +163,9 @@ class Node:
 		announcement = (
 		    "\n***********************************************\n"
 			+ "Notice:\n\n"
-			+ "Due to conflicting appointments, the following\n "
+			+ "Due to conflicting appointments, the following\n"
 			+ "appointment in which you were listed as a \n"
-			+ "participant has been cancelled: \n"
+			+ "participant has been cancelled: \n\n"
 			+ appt_string
 			+ "\n***********************************************\n"
 
