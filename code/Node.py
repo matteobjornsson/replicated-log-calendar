@@ -151,7 +151,7 @@ class Node:
 		message.close()
 		'''
 	
-	def notify_of_conflict_resolution(self, deleted_event: EventRecord):
+	def notify_of_conflict_resolution(self, deleted_event: ER):
 		appointment = deleted_event[1]
 		appt_name = appointment[0]
 		participants = appointment[4]
@@ -170,7 +170,7 @@ class Node:
 
 
 
-#    def addEventToLog(self, eR: EventRecord) -> void:
+#    def addEventToLog(self, eR: ER) -> void:
 		# use logProcessor object to add record to text file. 
 
 	def check_for_incoming_messages(self):
