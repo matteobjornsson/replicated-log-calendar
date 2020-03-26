@@ -28,7 +28,7 @@ Where Calendar tuple is structured as follows:
 class Log:
     header = ["TIME","NODE ID", "OPERATION", "APPOINTMENT NAME", "DAY", "START", "END", "PARTICIPANTS"]
 
-    def __init__(self, nodeID: int, freshboot: bool):
+    def __init__(self, nodeID: int):
         self.log = []
         self.logfile = ''
         if not os.path.isdir('../files'):
