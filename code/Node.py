@@ -79,9 +79,11 @@ class Node:
 							#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 							print("Incoming conflicting appt takes precedence, overrides local conflict")
 							self.deleteCalendarAppointment(conflicting_appt_name)
+							print("conflicting appointment to delete that already exists: ", type(conflicting_eR), conflicting_eR.stringRepresentation)
 							self.notify_of_conflict_resolution(conflicting_eR)
 						elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
 							self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
+							print("conflicting appointment is the incoming record: ", type(eventRecordFromNP), eventRecordFromNP.stringRepresentation)
 							self.notify_of_conflict_resolution(eventRecordFromNP)
 							print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
 							#TODO: SEND DELETE TO NODES
@@ -152,7 +154,7 @@ class Node:
 		'''
 	
 	def notify_of_conflict_resolution(self, deleted_event: ER):
-		appointment = deleted_event[1]
+		appointment = deleted_event.appointment
 		appt_name = appointment[0]
 		participants = appointment[4]
 		appt_string = "Appointment: {} \nDay: {}\nFrom: {} To: {}".format(
@@ -166,7 +168,10 @@ class Node:
 		message = (False, announcement)
 
 		for node in participants:
-			self.messenger.send(node, message)
+			if node == self.nodeID:
+				print(announcement)
+			else:
+				self.messenger.send(node, message)
 
 
 
@@ -183,7 +188,7 @@ class Node:
 				if message[0]:
 					self.receive(message[1], message[2], message[3])
 				else:
-					if not self.received_notifications.contains(message[1]):
+					if not message[1] in self.received_notifications:
 						self.received_notifications.append(message[1])
 						print(message[1])
 
@@ -249,7 +254,7 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
-		sleep(3)
+		sleep(3) #allow time for testing purposes
 		for n in self.messenger.otherNodes:
 			self.send(n)
 
@@ -328,11 +333,6 @@ if __name__ == '__main__':
 			node.deleteCalendarAppointment()
 		else:
 			node.addCalendarAppointment(choices[int(userChoice)])
-
-		#sleep(3)
-
-		#for n in node.messenger.otherNodes:
-		#	node.send(n)
 
 		node.displayCalendar()
 

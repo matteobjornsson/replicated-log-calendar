@@ -6,7 +6,12 @@ parser.add_argument('nodeID', help='NodeID.', type=int)
 args = parser.parse_args()
 node = Node.Node(4, args.nodeID)
 
-##
+## appointments for test purposes:
+choice5= ("DMV", 3, 12.5, 13.5, [1,2,3])
+choice6 = ("Skiing", 3, 6.0, 17.0, [3])
+###
+
+
 
 running_calendar = True
 print("Welcome! \n Here is your current calendar:\n")
@@ -30,5 +35,15 @@ while running_calendar:
     elif user_choice == 4:
         print("\nI hope your calendar is up to date. Enjoy the rest of your week.")
         running_calendar = False
+
+    #### options for testing: 
+    elif user_choice == 5:
+        node.addCalendarAppointment(choice5)
+        node.displayCalendar()
+    elif user_choice == 6:
+        node.addCalendarAppointment(choice6)
+        node.displayCalendar()
+    ####
+    
     else:
         "Not a valid choice, please enter 1,2,3, or 4."
