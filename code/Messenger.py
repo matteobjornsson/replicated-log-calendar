@@ -175,6 +175,7 @@ class Messenger:
 			#report when a connection closes or fails. 
 			if not packet:
 				failed_IP = connection.getpeername()
+				print("Failed IP: ", failed_IP)
 				failed_node = 0
 				for item in self.nodes:
 					print(item)
