@@ -206,6 +206,9 @@ class Messenger:
 		This method tries to reconnect the outgoing socket to the failed node. 
 		'''
 
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.out_sockets[failedNode] = s
+
 		hostSocket = self.out_sockets[failedNode]
 		destinationNode = failedNode
 		destinationIP = self.nodes[destinationNode-1][1]
