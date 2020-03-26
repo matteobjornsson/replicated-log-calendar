@@ -168,7 +168,10 @@ class Node:
 		message = (False, announcement)
 
 		for node in participants:
-			self.messenger.send(node, message)
+			if node == self.nodeID:
+				print(announcement)
+			else:
+				self.messenger.send(node, message)
 
 
 
