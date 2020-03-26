@@ -21,6 +21,7 @@ def check_refresh():
                 + "appointment \n\t2. Delete appointment \n\t3. Refresh "
                 + "calendar \n\t4. Exit calendar application\n"
             )
+            node.refresh_calendar = False
         sleep(.5)
 
 
