@@ -4,7 +4,7 @@ from time import sleep
 class Messenger:
 
 	out_sockets = {}
-	in_addresses = {}
+	in_sockets = {}
 	in_socket_threads = []
 	allThreads = []
 	message_queue = []
@@ -98,7 +98,7 @@ class Messenger:
 			self.allThreads.append(x) #threads stored for reference
 
 
-	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int):
+	def connect_socket(self, s: socket, host_ip: str, port: int, destination: int, reconnect = True):
 		'''
 		Method takes a socket and connection parameters and connects to that 
 		destination. 
@@ -107,7 +107,8 @@ class Messenger:
 			s:: socket to be used to establish connection
 			host_ip::   destination IP
 			port::      destination Port
-			destination::   node ID of destination. 
+			destination::   node ID of destination.
+			reconnect:: differentiates initial connection from reconnect 
 		'''
 		while True:
 			try:# attempt to connect socket to other node
@@ -117,11 +118,14 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				if not reconnect:
+					print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				else:
+					print("Connection has failed, reconnecting to node ", destination, " at ", host_ip, port, ' ......')
 				# debug print statemet to see how in socket thread count changes
 				for sthread in self.in_socket_threads:
 					print(type(sthread))
-				sleep(3)
+				sleep(2)
 				continue
 
 
@@ -140,7 +144,7 @@ class Messenger:
 			print('listening for incoming connections', )
 			c, addr = s.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
-			self.in_addresses[c] = addr
+			self.in_sockets[c] = addr[1]
 			# start a thread with that connnection to listen for add'l msgs
 			self.in_socket_threads.append(
 				threading.Thread(
@@ -180,10 +184,11 @@ class Messenger:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
-				break
+				self.reinit_failed_outgoing_connection(failed_node)
+				
+
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
-		print("end of in thread?")   
 
 ######  Normal Operation Methods ###### 
 	
@@ -196,6 +201,27 @@ class Messenger:
 	# TODO:
 	# methods here for detecting node loss and allowing to reconnect
 	# might be able to use @init_incoming_message_threads() again
+
+	def reinit_failed_outgoing_connection(self, failedNode: int):
+		'''
+		This method tries to reconnect the outgoing socket to the failed node. 
+		'''
+
+		hostSocket = self.out_sockets[failedNode]
+		destinationNode = failedNode
+		destinationIP = self.nodes[destinationNode-1][1]
+		destinationPort = self.nodes[destinationNode-1][2]
+		
+		# connection is threaded because the other nodes may or may not 
+		# be running or accepting connections yet
+		self.connect_socket(
+					hostSocket,
+					destinationIP,
+					destinationPort,
+					destinationNode,
+					False
+			)
+
 
 
 
