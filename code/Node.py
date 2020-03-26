@@ -1,22 +1,41 @@
+#import internal classes
 import Calendar
 import Log
-#import PartialLog
 import EventRecord as ER
-import numpy
 import Messenger
-import pickle
-import argparse
-import threading
+#Import external libraries
+import pickle, argparse, threading, numpy
 from time import sleep
 
 class Node:
+	"""
+	The main node logic were everything is executed.
+	Each Node has access to its own Log and Calendar, 
+	as well as a Messenger which is in charge of communicating 
+	with the other nodes.
+	"""
 
 	received_notifications = []
 	refresh_calendar = False
 
-## constructor: 
-
 	def __init__(self, N: int, i: int, local = 0):
+		"""
+		Node constructor.
+		Attributes: 
+			lamportTime: keeps track of local events using a Lamport timestamp
+			timeTable: the node's personal 2 dimensional timetable that keeps track 
+				of timestamp knowledge across all nodes as messages are received
+			nodeID: personal node ID (i.e. 1,2,3, or 4)
+			log: The partial log of the node, keeping track of eventRecords.
+				 An eventRecord consists of an operation (Insert/Delete), the corresponding Appointment,
+				 a lamport timestamp, and the originating node.
+				 This is updated/truncated as messages come in from other nodes
+			calendar: The actual calendar with up-to-date appointments.
+				 Each appointment consists of (Name, Day, StartTime, EndTime, Participants)
+			messenger: object that enables message sending to other nodes as a calendar is updated,
+				 a message includes the partial log, the timetable, and the nodeID
+			
+		"""
 		self.lamportTime = 0
 		self.timeTable = numpy.zeros((N,N))
 		self.nodeID = i
@@ -30,8 +49,10 @@ class Node:
 			)
 		receive_msg_thread.start()
 
-	## clock:
 	def clock(self) -> int:
+		"""
+		Clock function that increases lamportTime by 1 when called
+		"""
 		self.lamportTime += 1
 		return self.lamportTime
 
@@ -40,62 +61,53 @@ class Node:
 	def receive(self, received_NP_log, received_timetable, received_nodeID):
 		"""
 		process incoming messages. Update the timeTable and calendar accordingly. 
-		options:  add appointment
-					delete appointment
-		add any appointments to the log by passing an eventRecord object to 
-		addEventToLog()
+		options:  insert appointment
+				  delete appointment
+		Parameters:
+			received_NP_log: partial log received from originating node
+			received_timetable: timetable received from originating node
+			received_nodeID: which node is the message coming from
 		"""
 
 		new_events = []
-		print("\n Log at beginning of receive: ")
-		self.log.printLog()
+		#Iterate over incoming log
 		for eventRecordFromNP in received_NP_log:
-			print("incoming event: ", eventRecordFromNP.stringRepresentation)
 			#Create list of new eventrecords to update log later
 			# (if time of incoming event time is newer (greater than) our 
 			# TimeTable record of that node time append record to our log)
 			if not self.hasRec(eventRecordFromNP, self.nodeID) and eventRecordFromNP not in self.log.log:  #Create list of new eventrecords to update log later
 				new_events.append(eventRecordFromNP)
-
 				print("recorded as new event: ", eventRecordFromNP.stringRepresentation)
 				if eventRecordFromNP.operation == "Insert": #Update calendar object when inserting
-					print("incoming event operation %s for appt %s from node %d"%(eventRecordFromNP.operation, eventRecordFromNP.appointment[0], eventRecordFromNP.nodeID) )
 					"""
 					Check for conflicts
 					"""
 					try:
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
 					except ValueError:
-						print("conflict resolution triggered")
-						
-						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True)
-						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Currently overriding calendar appt
-						conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name)
-						if conflicting_eR.operation == "": #if conflicting_eR == None:
+						print("Conflict resolution triggered.")
+						#"Override = True" indicates that conflictresolution was triggered, and appt should be inserted					
+						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True) 
+						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Determine which appt is causing the conflict
+						conflicting_eR = self.log.get_insert_eventrecord(conflicting_appt_name) #Retreive corresponding eventrecord based on conflicting appt
+						if conflicting_eR.operation == "": #If no eventrecord for this appt was found, somethin weird happened
 							print("")
 						else:
 							conflicting_eR_nodeID = conflicting_eR.nodeID
-						#Tiebreaker based on node id's, higher node id wins the insert right. New event is being inserted.
+						#Tiebreaker based on node id's, higher node id wins the right to insert. New event is being inserted.
 						if eventRecordFromNP.nodeID > conflicting_eR_nodeID:
-							#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
-							print("Incoming conflicting appt takes precedence, overrides local conflict")
+							#Incoming event wins, existing event is "ignored", i.e. a delete has to be sent.
+							print("Incoming conflicting appt takes precedence, overrides local conflict.")
 							self.deleteCalendarAppointment(conflicting_appt_name)
-							print("conflicting appointment to delete that already exists: ", type(conflicting_eR), conflicting_eR.stringRepresentation)
 							self.notify_of_conflict_resolution(conflicting_eR)
 						elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
+							#Existing event wins, incoming event needs to be deleted.
 							self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
-							print("conflicting appointment is the incoming record: ", type(eventRecordFromNP), eventRecordFromNP.stringRepresentation)
 							self.notify_of_conflict_resolution(eventRecordFromNP)
 							print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
-							#TODO: SEND DELETE TO NODES
-					#else:
-					#	self.calendar.insertAppointment(eventRecordFromNP.appointment, override=True)
+
 				elif eventRecordFromNP.operation == "Delete": #Update calendar object when deleting             
-					#try:
-					if not self.log.check_delete_eR(eventRecordFromNP.appointment[0]):
-					#except ValueError:
-						# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!INSERT SKRILLEX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-						print("No delete event detected, go ahead and delete.")
+					if not self.log.check_delete_eR(eventRecordFromNP.appointment[0]): #Check if delete event was already recorded
 						self.calendar.deleteAppointment(eventRecordFromNP.appointment[0])
 					else:
 						print("EventRecord already exists, i.e., appt was already deleted")
@@ -125,37 +137,33 @@ class Node:
 		self.log.truncateLog(updated_log)
 
 	def update_timetable(self, received_timetable, received_nodeID):
-		for i in range(len(self.timeTable[0])): 
+		"""
+		Update own timetable based on incoming timetable, using Wuu and Bernstein algorithm
+		"""
+		for i in range(len(self.timeTable[0])): #Check timestamps in own row (if this is node 2, iterate over row 2) and compare to incoming node row
 			self.timeTable[self.nodeID-1][i] = max(self.timeTable[self.nodeID-1][i], received_timetable[received_nodeID-1][i])
 		
-		for i in range(len(self.timeTable[0])): 
+		for i in range(len(self.timeTable[0])): #Check all timetable values
 			for j in range(len(self.timeTable[0])):
 				self.timeTable[i][j] = max(self.timeTable[i][j], received_timetable[i][j])
 		
 
 	def send(self, to_nodeId):
 		"""
-		message to be sent
+		Build the partial log to be sent.
+		Create message:
+			(messenger event: int, partial log: [eventRecords], timetable: [[]], nodeID:int)
+			Where, messenger event: 0 = log update, 1 = notification, 2 = refresh calendar
+		Send a message to other nodes when a change is made to the log.
 		"""
 		NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
 		message = (0, NP, self.timeTable, self.nodeID)
 		self.messenger.send(to_nodeId, message)
-		# send a message to other nodes when a change is made to the log
-		# or as required to resolve conflicts. 
-		# Use logProcessor to buld a PartialLog with hasrec() to include with
-		# message. 
-
-		''' This is for testing: 
-		printableNP = []
-		for eR in NP:
-			printableNP.append(eR.stringRepresentation)
-		print([printableNP, self.timeTable])
-		message = open('incoming1.pkl', 'wb')
-		pickle.dump((NP, self.timeTable), message)
-		message.close()
-		'''
 	
 	def notify_of_conflict_resolution(self, deleted_event: ER):
+		"""
+		Send a notification to relevant nodes when conflict resolution occurs.
+		"""
 		appointment = deleted_event.appointment
 		appt_name = appointment[0]
 		participants = appointment[4]
@@ -181,10 +189,6 @@ class Node:
 				self.messenger.send(node, message)
 
 
-
-#    def addEventToLog(self, eR: ER) -> void:
-		# use logProcessor object to add record to text file. 
-
 	def check_for_incoming_messages(self):
 		'''
 		listen for incoming messages on messege queue, pop and recieve
@@ -200,11 +204,33 @@ class Node:
 						print(message[1])
 				elif message[0] == 2:
 					self.refresh_calendar = True
+	
+	def hasRec(self, eR, otherNodeId: int):
+		"""
+		hasRecord function as presented in Wuu and Bernstein.
+		Used to create partial log and check for new events on incoming message.
+		"""
+		if self.timeTable[otherNodeId-1][eR.nodeID-1] >= eR.lamportTime:
+			return True
+		else:
+			return False
+	
+	"""
+	User interaction logic
+	"""
 
-## User interaction logic: 
+	def displayCalendar(self): 
+		"""
+		Call calendar object to print
+		"""
+		self.calendar.printCalendar()
 
 	def addCalendarAppointment(self, appointment = None):
 		if appointment == None:
+			"""
+			User input logic to add appointment with exception handling for input, 
+			not the cleanest way of handling this...
+			"""
 			name = input("Enter the name of the appointment: ")
 			while True:
 				try:	
@@ -237,7 +263,10 @@ class Node:
 				except ValueError:
 					print("End time needs to be entered as a number.")
 					continue
-				else:
+				if end_time <= start_time:
+					print("End time cannot be before start time.")
+					continue
+				elif:
 					break
 			while True:
 				try:
@@ -249,7 +278,9 @@ class Node:
 					continue
 				else:
 					break
-				
+			"""
+			If there are no problems with any input, create the appointment!
+			"""
 			appointment = (name, int(day), float(start_time), float(end_time), part_list)
 		try:
 			self.calendar.insertAppointment(appointment)
@@ -257,8 +288,6 @@ class Node:
 			self.timeTable[self.nodeID-1][self.nodeID-1] = lamportTime
 			eR = ER.EventRecord("Insert", appointment, lamportTime, self.nodeID)
 			self.log.insert(eR)
-
-			#print("\"{}\" added to calendar.".format(appointment[0]))
 		except ValueError:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
@@ -267,14 +296,11 @@ class Node:
 		for n in self.messenger.otherNodes:
 			self.send(n)
 
-		#print statements for debugging
-		#print('\nUpdated time table from insert event: \n')
-		#print(self.timeTable)
-		#print('\n')
-
 
 	def deleteCalendarAppointment(self, appointmentName = None):
-		
+		"""
+		User input logic for deleting an appointment.
+		"""
 		if appointmentName == None:
 			appointmentName = input(
 				"Enter the exact text of the appointment name you wish to delete: "
@@ -299,11 +325,11 @@ class Node:
 		for n in self.messenger.otherNodes:
 			self.send(n)
 
-	def displayCalendar(self): 
-		self.calendar.printCalendar()
-
-# These methods are the same as above but built to take the information 
-# directly as parameters, 
+	"""
+	These methods are the same as above but built to take the information 
+	directly as parameters.
+	Used for testing
+	"""
 
 	def testAddCalendarAppointment(self, appointment: tuple) -> None:
 		self.calendar.insertAppointment(appointment)
@@ -311,14 +337,11 @@ class Node:
 	def testDeleteCalendarAppointment(self, appointmentName: str) -> None:
 		self.calendar.deleteAppointment(appointmentName)
 
-	def hasRec(self, eR, otherNodeId: int):
-		if self.timeTable[otherNodeId-1][eR.nodeID-1] >= eR.lamportTime:
-			return True
-		else:
-			return False
-
 
 if __name__ == '__main__':
+	"""
+	Testing functionality
+	"""
 	parser =  argparse.ArgumentParser(description='Node instance')
 	parser.add_argument('nodeID', help='NodeID.', type=int)
 	parser.add_argument('local', help='local or not', type=int)
@@ -345,14 +368,3 @@ if __name__ == '__main__':
 
 		node.displayCalendar()
 
-
-"""
-time table at end of main():
-
-self.timeTable = 
-[[0. 0. 0. 0.]
- [0. 5. 0. 0.]
- [0. 0. 0. 0.]
- [0. 0. 0. 0.]]
-
-"""
