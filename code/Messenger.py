@@ -118,6 +118,9 @@ class Messenger:
 			except socket.error:
 				# while the connection fails, wait, and retry
 				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				# debug print statemet to see how in socket thread count changes
+				for s in self.in_socket_threads:
+					print(type(s))
 				sleep(3)
 				continue
 
@@ -129,10 +132,7 @@ class Messenger:
 		'''
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
-		#host = socket.gethostbyaddr() # acquire self hostname
-		#host = self.nodes[self.nodeID-1][1]
 		port = self.nodes[self.nodeID-1][2]
-		#print("Host: ", host, "Port: ", port)
 		s.bind(('', port)) # bind to predetermined port
 		s.listen(4) #accept up to 4 connections
 
@@ -180,8 +180,6 @@ class Messenger:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
-				for s in self.in_socket_threads:
-					print(type(s))
 				break
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
