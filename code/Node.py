@@ -138,7 +138,7 @@ class Node:
 		message to be sent
 		"""
 		NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
-		message = (True, NP, self.timeTable, self.nodeID)
+		message = (0, NP, self.timeTable, self.nodeID)
 		self.messenger.send(to_nodeId, message)
 		# send a message to other nodes when a change is made to the log
 		# or as required to resolve conflicts. 
@@ -172,7 +172,7 @@ class Node:
 			+ "\n***********************************************\n"
 
 		)
-		message = (False, announcement)
+		message = (1, announcement)
 
 		for node in participants:
 			if node == self.nodeID:
@@ -192,12 +192,14 @@ class Node:
 		while True:
 			if not self.messenger.message_queue == []:
 				message = self.messenger.message_queue.pop(0)
-				if message[0]:
+				if message[0]== 0:
 					self.receive(message[1], message[2], message[3])
-				else:
+				elif message[0] == 1:
 					if not message[1] in self.received_notifications:
 						self.received_notifications.append(message[1])
 						print(message[1])
+				elif message[0] == 2:
+					self.refresh_calendar = True
 
 ## User interaction logic: 
 
