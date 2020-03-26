@@ -115,7 +115,7 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connecting to ", destination, ".....")
+				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				sleep(3)
 				continue
 
@@ -128,12 +128,14 @@ class Messenger:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
 		#host = socket.gethostbyaddr() # acquire self hostname
-		#print("Host: " + host)
-		s.bind(('', self.nodes[self.nodeID-1][2])) # bind to predetermined port
+		#host = self.nodes[self.nodeID-1][1]
+		port = self.nodes[self.nodeID-1][2]
+		#print("Host: ", host, "Port: ", port)
+		s.bind(('', port)) # bind to predetermined port
 		s.listen(4) #accept up to 4 connections
-
+		print(s)
 		while True:
-			print('listening for incoming socket connection')
+			print('listening for incoming connections', )
 			c, addr = s.accept() # store the incoming connection in c, addr
 			print("Input socket connected to: ", addr) 
 			# start a thread with that connnection to listen for add'l msgs
