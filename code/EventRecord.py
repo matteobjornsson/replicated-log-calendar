@@ -21,8 +21,15 @@ class EventRecord:
                     "TIME \t NODEID \t OPERATION \t APPOINTMENTNAME \t DAY \t 
                     START \t END \t PARTICIPANTS"
 
+    For reference, an event record as defined in Wuu and Bernstein:
+    type Event = 
+        record
+            op  :   OperationType;
+            time:   TimeType;
+            node:   NodeId;
+        end
+
     '''
-    # Attributes initalized 
     
     def __init__(self, operation: str, appointment: tuple, lamportTime: int,
                 nodeID: int):
@@ -69,35 +76,24 @@ class EventRecord:
         print(self.stringRepresentation)
     
     def __eq__(self, other):
-        if other.operation == self.operation:
-            if other.operation == "Insert":
-                if self.lamportTime == other.lamportTime and self.nodeID == other.nodeID and self.appointment[0] == other.appointment[0]:
+        """
+        Overriding equals method to perform checks between eventrecord objects in the log.
+        """
+        if other.operation == self.operation: #Check if operation is the same, because that is the first check that matters
+            if other.operation == "Insert": #If event is Inserting an appt, check all other attributes
+                if self.lamportTime == other.lamportTime and self.nodeID == other.nodeID and self.appointment[0] == other.appointment[0]: #appt[0] represents appt name, as names are unique this is all that matters
                     return True
                 else:
                     return False
-            else:
+            else: #If deleting event, all that matter is the appt name (appt[0])
                 if self.appointment[0] == other.appointment[0]:
                     return True
                 else:
-                    return False
-
-        """
-        if other.operation == "Insert" and self.operation == "Insert":
-            if self.lamportTime == other.lamportTime and self.nodeID == other.nodeID and self.appointment[0] == other.appointment[0]:
-                return True
-            else:
-                return False
-           
-        elif other.operation == "Delete" and self.operation =="Delete":
-            if self.operation == other.operation and self.appointment[0] == other.appointment[0]:
-                return True
-            else:
-                return False
-        """
-        
+                    return False       
 
 
 if __name__ == '__main__':
+    #TESTING
     doctorAppointment = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
     dmvAppointment = ("DMV", 5, 12.5, 13.5, [4])
     siingAppointment = ("Skiing", 7, 8, 18, [2,3])
@@ -106,27 +102,3 @@ if __name__ == '__main__':
     eR2 = EventRecord("Insert", dmvAppointment, 3, 3)
     print(eR1.stringRepresentation)
     print(eR1.iterable)
-
-
-'''
-#prior attempt to make an immutable object, for posterity:
-
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class EventRecord:
-    event: str
-    lamportTime: int
-    node: int
-'''
-
-'''
-For reference, an event record as defined in Wuu and Bernstein
-
-type Event = 
-    record
-        op  :   OperationType;
-        time:   TimeType;
-        node:   NodeId;
-    end
-'''
