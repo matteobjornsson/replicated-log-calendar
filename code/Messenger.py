@@ -115,6 +115,7 @@ class Messenger:
 			port::      destination Port
 			destination::   node ID of destination. 
 		'''
+		counter = 0
 		while True:
 			try:# attempt to connect socket to other node
 				s.connect((host_ip, port))
@@ -123,11 +124,14 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				if counter == 12:
+					print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+					counter = 0
 				# debug print statemet to see how in socket thread count changes
 				#for sthread in self.in_socket_threads:
 				#	print(type(sthread))
-				sleep(3)
+				counter += 1
+				sleep(.25)
 				continue
 
 
@@ -216,6 +220,7 @@ class Messenger:
 		destinationIP = self.nodes[destinationNode-1][1]
 		destinationPort = self.nodes[destinationNode-1][2]
 		
+		counter = 0
 		while True:
 			try:# attempt to connect socket to other node
 				hostSocket.connect((destinationIP, destinationPort))
@@ -224,9 +229,11 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connection has failed, reconnecting to node ", destinationNode, " at ", destinationIP, destinationPort, ' ......')
+				if counter == 12:
+					print("Connection has failed, reconnecting to node ", destinationNode, " at ", destinationIP, destinationPort, ' ......')
 				# debug print statemet to see how in socket thread count changes
-				sleep(2)
+				counter += 1
+				sleep(.25)
 				continue
 		
 
