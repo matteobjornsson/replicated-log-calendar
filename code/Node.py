@@ -13,7 +13,7 @@ class Node:
 
 ## constructor: 
 
-	def __init__(self, N: int, i: int, local: int):
+	def __init__(self, N: int, i: int, local = 0):
 		self.lamportTime = 0
 		self.timeTable = numpy.zeros((N,N))
 		self.nodeID = i
