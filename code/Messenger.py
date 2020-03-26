@@ -123,7 +123,7 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				#print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				# debug print statemet to see how in socket thread count changes
 				#for sthread in self.in_socket_threads:
 				#	print(type(sthread))
@@ -136,8 +136,6 @@ class Messenger:
 		Method creates a socket that listens for incoming connections, assigning
 		them to a new thread on arrival to accept messages from connection.
 		'''
-
-
 		while True:
 			print('listening for incoming connections on ', self.listen_socket.getsockname() )
 			c, addr = self.listen_socket.accept() # store the incoming connection in c, addr
@@ -182,6 +180,8 @@ class Messenger:
 						failed_node = item[0]
 						break
 				print("exiting socket. node ", failed_node, " failed")
+				
+				# reinstate connection: 
 				self.reinit_failed_outgoing_connection(failed_node)
 				self.reinit_incoming_message_thread()
 				break
