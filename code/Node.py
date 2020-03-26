@@ -11,6 +11,8 @@ from time import sleep
 
 class Node:
 
+	received_notifications = []
+
 ## constructor: 
 
 	def __init__(self, N: int, i: int, local = 0):
@@ -77,8 +79,10 @@ class Node:
 							#Existing event wins, incoming event is "ignored", i.e. a delete has to be sent.
 							print("Incoming conflicting appt takes precedence, overrides local conflict")
 							self.deleteCalendarAppointment(conflicting_appt_name)
+							self.notify_of_conflict_resolution(conflicting_eR)
 						elif conflicting_eR_nodeID > eventRecordFromNP.nodeID: 
 							self.deleteCalendarAppointment(eventRecordFromNP.appointment[0])
+							self.notify_of_conflict_resolution(eventRecordFromNP)
 							print("Appointment was not inserted because there is a conflict. Incoming event {} is being deleted.".format(eventRecordFromNP.appointment[0]))
 							#TODO: SEND DELETE TO NODES
 					#else:
@@ -130,7 +134,7 @@ class Node:
 		message to be sent
 		"""
 		NP = [eR for eR in self.log.log if not self.hasRec(eR, to_nodeId)]
-		message = (NP, self.timeTable, self.nodeID)
+		message = (True, NP, self.timeTable, self.nodeID)
 		self.messenger.send(to_nodeId, message)
 		# send a message to other nodes when a change is made to the log
 		# or as required to resolve conflicts. 
@@ -146,8 +150,27 @@ class Node:
 		pickle.dump((NP, self.timeTable), message)
 		message.close()
 		'''
+	
+	def notify_of_conflict_resolution(self, deleted_event: ER):
+		appointment = deleted_event[1]
+		appt_name = appointment[0]
+		participants = appointment[4]
+		appt_string = "Appointment: {} \nDay: {}\nFrom: {} To: {}".format(
+			appt_name, appointment[1], appointment[2], appointment[3]
+			)
+		announcement = (
+			"Due to conflicting appointments, the following appointment in "
+			+ " which you were listed as a participant has been cancelled: \n"
+			+ appt_string
+		)
+		message = (False, announcement)
 
-#    def addEventToLog(self, eR: EventRecord) -> void:
+		for node in participants:
+			self.messenger.send(node, message)
+
+
+
+#    def addEventToLog(self, eR: ER) -> void:
 		# use logProcessor object to add record to text file. 
 
 	def check_for_incoming_messages(self):
@@ -157,8 +180,12 @@ class Node:
 		while True:
 			if not self.messenger.message_queue == []:
 				message = self.messenger.message_queue.pop(0)
-				self.receive(message[0], message[1], message[2])
-
+				if message[0]:
+					self.receive(message[1], message[2], message[3])
+				else:
+					if not self.received_notifications.contains(message[1]):
+						self.received_notifications.append(message[1])
+						print(message[1])
 
 ## User interaction logic: 
 
