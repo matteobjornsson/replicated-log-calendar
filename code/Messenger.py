@@ -117,7 +117,7 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
+				#print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				# debug print statemet to see how in socket thread count changes
 				for sthread in self.in_socket_threads:
 					print(type(sthread))
@@ -183,7 +183,7 @@ class Messenger:
 				self.reinit_failed_outgoing_connection(failed_node)
 				self.reinit_incoming_message_thread(self.in_sockets[failed_IP])
 				continue
-			
+
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
 
