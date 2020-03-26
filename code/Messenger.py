@@ -128,12 +128,12 @@ class Messenger:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
 		#host = socket.gethostbyaddr() # acquire self hostname
-		host = self.nodes[self.nodeID-1][1]
+		#host = self.nodes[self.nodeID-1][1]
 		port = self.nodes[self.nodeID-1][2]
-		print("Host: ", host, "Port: ", port)
-		s.bind((host, port)) # bind to predetermined port
+		#print("Host: ", host, "Port: ", port)
+		s.bind(('', port)) # bind to predetermined port
 		s.listen(4) #accept up to 4 connections
-
+		print(s)
 		while True:
 			print('listening for incoming connections', )
 			c, addr = s.accept() # store the incoming connection in c, addr
