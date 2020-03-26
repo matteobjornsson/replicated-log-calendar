@@ -115,7 +115,7 @@ class Messenger:
 				break
 			except socket.error:
 				# while the connection fails, wait, and retry
-				print("Connecting to ", destination, ".....")
+				print("Connecting to node ", destination, " at ", host_ip, port, ' ......')
 				sleep(3)
 				continue
 
