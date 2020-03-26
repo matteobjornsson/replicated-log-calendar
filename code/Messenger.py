@@ -2,6 +2,12 @@ import socket, threading, argparse, pickle, csv, ast
 from time import sleep
 
 class Messenger:
+	"""
+	Messenger class is in charge of connecting to other nodes, 
+	as well as sending and receiving messages.
+	Starts separate threads for listening and sending for all nodes.
+	Uses sockets and IP addresses to connect across the network.
+	"""
 
 	out_sockets = {}
 	in_sockets = {}
@@ -200,9 +206,6 @@ class Messenger:
 
 	
 ######  Recovery Methods ######
-	# TODO:
-	# methods here for detecting node loss and allowing to reconnect
-	# might be able to use @init_incoming_message_threads() again
 
 	def reinit_failed_outgoing_connection(self, failedNode: int):
 		'''
