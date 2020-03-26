@@ -263,9 +263,10 @@ if __name__ == '__main__':
 	parser =  argparse.ArgumentParser(description='Node instance')
 	parser.add_argument('nodeID', help='NodeID.', type=int)
 	parser.add_argument('local', help='local or not', type=int)
+	parser.add_argument('freshBoot', help='True = start fresh, False = read from file', type=bool)
 	args = parser.parse_args()
 
-	node = Node(4, args.nodeID, args.local, True)
+	node = Node(4, args.nodeID, args.local, args.freshBoot)
 
 	choices = {}
 	choices[1] = ("Doctor Appointment", 2, 12.5, 13.5, [1,2])
