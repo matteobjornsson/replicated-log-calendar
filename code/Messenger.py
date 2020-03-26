@@ -174,7 +174,9 @@ class Messenger:
 				
 			#report when a connection closes or fails. 
 			if not packet:
-				print("exiting socket")
+				failed_IP = connection.getpeername()
+				failed_node = [item[0] for item in self.nodes if item[1]==failed_IP]
+				print("exiting socket. node ", failed_node, " failed")
 				print(connection)
 				for s in self.in_socket_threads:
 					print(type(s))
