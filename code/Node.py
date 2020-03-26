@@ -281,6 +281,7 @@ if __name__ == '__main__':
 	parser =  argparse.ArgumentParser(description='Node instance')
 	parser.add_argument('nodeID', help='NodeID.', type=int)
 	parser.add_argument('local', help='local or not', type=int)
+	parser.add_argument('freshBoot', help='True = start fresh, False = read from file', type=bool)
 	args = parser.parse_args()
 
 	node = Node(4, args.nodeID, args.local)
@@ -308,28 +309,6 @@ if __name__ == '__main__':
 
 		node.displayCalendar()
 
-
-		
-
-
-
-	"""
-	try:
-		read_file = open('incoming2.pkl', 'rb')
-		incomingMessage = pickle.load(read_file)
-		read_file.close()
-	except FileNotFoundError:
-		print("No incoming message available to read in")
-	
-	incomingNPLog = incomingMessage[0]
-	incomingNPTimeTable = incomingMessage[1]
-	node.receive(incomingNPLog, incomingNPTimeTable)
-	node.displayCalendar()
-	print(node.timeTable)
-	"""
-
-	
-	
 
 """
 time table at end of main():
