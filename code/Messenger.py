@@ -184,7 +184,7 @@ class Messenger:
 				print("exiting socket. node ", failed_node, " failed")
 				self.reinit_failed_outgoing_connection(failed_node)
 				self.reinit_incoming_message_thread()
-				continue
+				break
 
 			unpickled_message = pickle.loads(packet)#Decode messages for interpretation
 			self.message_queue.append(unpickled_message) # Append to msg queue
@@ -228,7 +228,7 @@ class Messenger:
 				continue
 
 	def reinit_incoming_message_thread(self):
-		print('listening for incoming connections on ', )
+		print('listening for incoming connections on ', self.listen_socket.getsockname() )
 		c, addr = self.listen_socket.accept() # store the incoming connection in c, addr
 		print("Input socket connected to: ", addr) 
 		self.in_sockets[addr[1]] = c
