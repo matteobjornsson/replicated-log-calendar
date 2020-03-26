@@ -25,12 +25,17 @@ class Calendar:
     calendarFile = None
 
     def __init__(self, nodeID):
+        """
+        Calendar constructor
+        Attributes:
+            appointments = dictionary of calendar appointments
+            file_path: store filepath for reading and writing
+        """
         self.appointments = {}
         if not os.path.isdir('../files'):
             os.mkdir('../files')  
-        #file_path = '../files/logOutput.tsv'
         filename = "calendar" + str(nodeID) + ".pkl"
-        self.file_path = '../files/' + filename
+        self.file_path = '../files/' + filename 
         try:
             read_file = open(self.file_path, 'rb')
             self.appointments = pickle.load(read_file)
@@ -57,33 +62,31 @@ class Calendar:
         #If override == False, i.e., the incoming appt needs to be checked for conflicts 
         #   iterate over all existing appointments in current calendar
         if not override:
-            print("override = false")
-            if self.check_participants_overlap(appointment[4]):
-                print("participant overlap occurred")
-                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
-                if date_overlap_bool:
-                    print("date conflict occurred")
+            if self.check_participants_overlap(appointment[4]): #Check participant overlap
+                date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date) #Check date overlap
+                if date_overlap_bool: #if there is overlap, raise error
                     raise CalendarConflictError("Conflicting appointments occurred")
-                else:
-                    print("no date overlap")
+                else: #else: insert appointment, no conflict
                     self.appointments[appointment[0]] = appointment
                     self.updateCalendarFile()
-            else:
-                print("no participant overlap")
+            else: #no participant overlap: insert appointment
                 self.appointments[appointment[0]] = appointment
                 self.updateCalendarFile()
                     
-        elif override:
+        elif override: #Conflict resolution already occurred or not necessary, so we can override
             self.appointments[appointment[0]] = appointment
             self.updateCalendarFile()
     
     def get_conflicting_appt_name(self, appointment):
+        """
+        If there is conflict, find which appointment is causing the conflict in relation to the incoming appointment.
+        Parameter:
+            appointment: incoming appointment to check against
+        """
         incoming_appt_date = (appointment[1], appointment[2], appointment[3])
         if self.check_participants_overlap(appointment[4]):
                 date_overlap_bool, name_of_event = self.check_date_conflict(incoming_appt_date)
                 if date_overlap_bool:
-                    #self.appointments[appointment[0]] = appointment
-                    #self.updateCalendarFile()
                     return name_of_event
 
     def check_participants_overlap(self, incoming_participants):
@@ -92,15 +95,11 @@ class Calendar:
         """
         for appt_name, appt in self.appointments.items():
             existing_participants = appt[4]
-            print("existing: ", set(existing_participants))
-            print("incoming: ", set(incoming_participants))
-            if existing_participants == incoming_participants:
-                print("exact same participants")
+            if existing_participants == incoming_participants: #exact same participants overlap
                 return True
-            elif not set(existing_participants).isdisjoint(set(incoming_participants)):
-                print("overlapping participants")
+            elif not set(existing_participants).isdisjoint(set(incoming_participants)): #overlap in subset of participants
                 return True
-
+        #no overlap
         return False
         
     def check_date_conflict(self, incoming_date):
@@ -108,7 +107,6 @@ class Calendar:
         Checks for date conflict, each date is a tuple of the form: (date, starttime, endtime)
         """
         #Check if event is on the same day
-
         for appt_name, appt in self.appointments.items():
             existing_date = (appt[1], appt[2], appt[3])
             if existing_date[0] == incoming_date[0]:
@@ -124,15 +122,19 @@ class Calendar:
         return False, None
 
     def deleteAppointment(self, appointmentName: str) -> None:
+        """
+        Delete appointment from calendar
+        """
         try:
             del self.appointments[appointmentName]
             self.updateCalendarFile()
         except KeyError:
             print("Appointment does not exist in calendar.")
 
-        # TODO: check for existing delete
-
     def updateCalendarFile(self) -> None:
+        """
+        Write updated calendar to file
+        """
         calendarFile = open(self.file_path, 'wb')
         pickle.dump(self.appointments, calendarFile)
         calendarFile.close()
@@ -140,6 +142,7 @@ class Calendar:
 
     def printCalendar(self) -> None:
         '''
+        Print calendar in readable format.
         appointment = (
             name: str, 
             day: int, 
@@ -172,16 +175,22 @@ class Calendar:
             elif appointment[1] == 7:
                 week_dict["Saturday"].append(list(appointment))
         for weekday, appt_list in week_dict.items():
-            print("{}:\n------------\n".format(weekday.ljust(weekday_width)))
+            print("\n{}:\n------------\n".format(weekday.ljust(weekday_width)))
             if appt_list != []:
                 np.argsort(np.array(appt_list)[:,2])
                 for appt in appt_list:
                     print("{} \t {} \t {} \t {} \t {}".format("".ljust(weekday_width),appt[0].ljust(col_width), '{0:02.0f}:{1:02.0f}'.format(*divmod(appt[2] * 60, 60)), '{0:02.0f}:{1:02.0f}'.format(*divmod(appt[3] * 60, 60)), appt[4]))
     
     def contains(self, appointmentName: str) -> bool:
+        """
+        Does the calendar contain a specific appt?
+        """
         return (appointmentName in self.appointments)
 
     def getAppointment(self, appointmentName: str) -> tuple:
+        """
+        Get a specific appointment
+        """
         return self.appointments[appointmentName]
 
 
