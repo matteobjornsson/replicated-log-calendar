@@ -307,7 +307,7 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
-		sleep(3) #allow time for testing purposes
+		sleep(30) #allow time for testing purposes
 		for n in self.messenger.otherNodes:
 			self.send(n)
 
