@@ -99,6 +99,7 @@ class Node:
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
 					except ValueError:
 						print("Conflict resolution triggered.")
+						conflicting_eR_nodeID = -1
 						#"Override = True" indicates that conflictresolution was triggered, and appt should be inserted					
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True) 
 						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Determine which appt is causing the conflict
@@ -144,8 +145,6 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j+1):
 					updated_log.append(er)
-					print("appended event record to updated log: \n")
-					er.printEventRecord()
 					break
 		self.log.truncateLog(updated_log)
 

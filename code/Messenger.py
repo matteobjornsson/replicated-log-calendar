@@ -15,6 +15,7 @@ class Messenger:
 	allThreads = []
 	message_queue = []
 	listen_socket = None
+	file_path = '../files/nodeAddresses.tsv'
 
 	localNodes =[(1, "localhost", 8081, [2,3,4]), (2, "localhost", 8082, [1,3,4]), 
 			 (3, "localhost", 8083, [1,2,4]), (4, "localhost", 8084, [1,2,3])]
@@ -35,7 +36,7 @@ class Messenger:
 		else: 
 			self.nodes = self.read_in_node_addresses()
 		self.otherNodes = self.nodes[self.nodeID-1][3] 
-		self.file_path = '../files/nodeAddresses.tsv'
+		#self.file_path = file_path
 		self.listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
 		self.listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # config
 		port = self.nodes[self.nodeID-1][2]
