@@ -257,6 +257,9 @@ class Node:
 				except ValueError:
 					print("Day needs to be entered as a number between 1-7.")
 					continue
+				if day > 7 or day < 1:
+					print("Day cannot be less than 1 or more than 7. Please try again.")
+					continue
 				else:
 					break
 			while True:
