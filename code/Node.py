@@ -99,6 +99,7 @@ class Node:
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override=False) #Check for conflict resolution
 					except ValueError:
 						print("Conflict resolution triggered.")
+						conflicting_eR_nodeID = -1
 						#"Override = True" indicates that conflictresolution was triggered, and appt should be inserted					
 						self.calendar.insertAppointment(eventRecordFromNP.appointment, override = True) 
 						conflicting_appt_name = self.calendar.get_conflicting_appt_name(eventRecordFromNP.appointment) #Determine which appt is causing the conflict
@@ -144,8 +145,6 @@ class Node:
 			for j in range(len(self.timeTable[0])):
 				if not self.hasRec(er, j+1):
 					updated_log.append(er)
-					print("appended event record to updated log: \n")
-					er.printEventRecord()
 					break
 		self.log.truncateLog(updated_log)
 
@@ -258,6 +257,9 @@ class Node:
 				except ValueError:
 					print("Day needs to be entered as a number between 1-7.")
 					continue
+				if day > 7 or day < 1:
+					print("Day cannot be less than 1 or more than 7. Please try again.")
+					continue
 				else:
 					break
 			while True:
@@ -305,7 +307,7 @@ class Node:
 			print("There already exists an appointment at that time for one or more of the participants. \n The appointment cannot be created.")		
 		
 		# send this update to all other nodes
-		sleep(3) #allow time for testing purposes
+		#sleep(30) #allow time for testing purposes
 		for n in self.messenger.otherNodes:
 			self.send(n)
 
