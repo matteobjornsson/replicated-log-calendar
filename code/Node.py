@@ -35,18 +35,23 @@ class Node:
 		"""
 		Node constructor.
 		Attributes: 
-			lamportTime: keeps track of local events using a Lamport timestamp
-			timeTable: the node's personal 2 dimensional timetable that keeps track 
-				of timestamp knowledge across all nodes as messages are received
-			nodeID: personal node ID (i.e. 1,2,3, or 4)
-			log: The partial log of the node, keeping track of eventRecords.
-				 An eventRecord consists of an operation (Insert/Delete), the corresponding Appointment,
-				 a lamport timestamp, and the originating node.
-				 This is updated/truncated as messages come in from other nodes
-			calendar: The actual calendar with up-to-date appointments.
-				 Each appointment consists of (Name, Day, StartTime, EndTime, Participants)
-			messenger: object that enables message sending to other nodes as a calendar is updated,
-				 a message includes the partial log, the timetable, and the nodeID
+			lamportTime: 	keeps track of local events using a Lamport timestamp
+
+			timeTable: 		the node's personal 2 dimensional timetable that keeps track 
+							of timestamp knowledge across all nodes as messages are received
+
+			nodeID: 		personal node ID (i.e. 1,2,3, or 4)
+
+			log: 			The partial log of the node, keeping track of eventRecords.
+				 			An eventRecord consists of an operation (Insert/Delete), the corresponding Appointment,
+				 			a lamport timestamp, and the originating node.
+				 			This is updated/truncated as messages come in from other nodes
+
+			calendar: 		The actual calendar with up-to-date appointments.
+				 			Each appointment consists of (Name, Day, StartTime, EndTime, Participants)
+							 
+			messenger: 		object that enables message sending to other nodes as a calendar is updated,
+				 			a message includes the partial log, the timetable, and the nodeID
 			
 		"""
 		self.lamportTime = 0

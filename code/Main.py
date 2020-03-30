@@ -5,6 +5,8 @@ from time import sleep
 parser =  argparse.ArgumentParser(description='Node instance number (1-4)')
 parser.add_argument('nodeID', help='NodeID.', type=int)
 args = parser.parse_args()
+
+# start up the node
 node = Node.Node(4, args.nodeID)
 
 ## appointments for test purposes:
