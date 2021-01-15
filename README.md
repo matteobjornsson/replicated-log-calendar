@@ -2,10 +2,10 @@
 Distributed Log Programming Project
 CSCI 520: Distributed Log Programming Project
 
-Introduction
+## Introduction
 While the specification of distributed algorithms can be elegant and straightforward, the implementation is made complicated by many details. It requires a certain skill to solve practical implementation challenges while staying true to algorithm specification. The goal of this assignment is to give you experience with implementation of a physical distributed system.
 
-Assignment
+## Assignment
 Your task is to implement a distributed calendar application using a replicated log and dictionary. The system consists of N nodes, each node corresponding to a single user. Each node stores its own local calendar, and you must implement a distributed algorithm to share calendar information among users. You will use Wuu and Bernstein’s algorithm to share this information.
 
 The calendar keeps track of appointment events, where each appointment is a tuple consisting of the following fields:
@@ -29,12 +29,12 @@ In the Wuu and Bernstein algorithm, nodes may not always have the most up-to-dat
 
 A user should also be able to cancel an appointment (if that user is a participant). If an appointment is cancelled, whether by a user explicitly or by your conflict resolution protocol, this cancellation should be recorded as a delete event in the log, and the event should be removed from the local calendar. Any other participants in the cancelled meeting should be notified of this deletion as well (by sending the log). Your application should truncate logs and reduce message sizes using the Wuu and Bernstein algorithm.
 
-Implementation Details
+## Implementation Details
 You must implement a system with four nodes. Each node will be run on a different machine. The log and calendar should be stored on disk, so that it will survive node crashes. You need to provide, at least, a minimal user interface (UI) to view, insert, and delete appointments. A text-based UI is fine. The contents of the log must also be viewable, for example by reading a file, so long as the file is human readable. Please make sure the action of your nodes, such as receiving events, are triggered by these events arriving over the network, rather than through a UI.
 
 You will deploy your project on Amazon EC2, on four machines in four different regions. You will use micro-instances. You should sign up for AWS Educate to get your $35 credit for use of Amazon’s cloud infrastructure. This should be enough for you to deploy and demo the project. You should not do your development in AWS, but push your code from a repository (GitHub) to your AWS instances to test and demo.
 
-Grading
+## Grading
 Your grade will be based on a screencast that demonstrates the functionality of your code. I expect the demonstration to show the different types of events that users may insert, event deletions, event conflicts, and the results of your resolution mechanism. I will be looking for functionality and correctness of your mechanisms.
 
 Specifically, you will be graded according to the following rubric:
@@ -63,12 +63,10 @@ Specifically, you will be graded according to the following rubric:
 2 - implemented on different AWS nodes
 1 - multithreaded implementation
 
-What to submit?
+## What to submit?
 A report containing:
 A link to a YouTube video showing your code running on AWS instances.
 Description of your mechanism for handling scheduling conflicts.
 Your source code (unzipped) for D2L plagiarism check
 
 
-
-Published by Google Drive–Report Abuse–Updated automatically every 5 minutes
