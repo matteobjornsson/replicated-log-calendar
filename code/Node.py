@@ -61,7 +61,7 @@ class Node:
 		self.calendar = Calendar.Calendar(self.nodeID) 
 		self.messenger = Messenger.Messenger(i, local)
 
-		# listen for incoming messages on messege queue, pop and recieve
+		# listen for incoming messages on message queue, pop and receive
 		receive_msg_thread = threading.Thread(
 			target=self.check_for_incoming_messages
 			)

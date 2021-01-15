@@ -55,7 +55,7 @@ Distributed requirements:
 
 - Each node shall maintain a log of operations on the calendar from all users. 
 
-- The system shall use Wuu and Bernstein's algorithm to share changes to the calendar between nodes. 
+- The system shall use Wuu and Bernstein algorithm to share changes to the calendar between nodes. 
 
 - If appointments are created that conflict, the system shall resovle this conflict by deleting one of the conflicting appointments and notifying the users involved in the cancelled appointment. 
 
@@ -65,7 +65,7 @@ Distributed requirements:
 
 
 -------------------------
-Implementation/structure:
+Implementation /structure:
 ------------------------- 
 
 - The system shall consist of 4 nodes.
